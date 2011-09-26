@@ -24,6 +24,7 @@
 	<scm>
 		<connection>scm:git:ssh://git@github.com:agilebirds/openflexo.git</connection>
 		<url>https://github.com/agilebirds/openflexo</url>
+		<developerConnection>sylvain,guillaume</developerConnection>
 	</scm>
 	<repositories>
 		<repository>
