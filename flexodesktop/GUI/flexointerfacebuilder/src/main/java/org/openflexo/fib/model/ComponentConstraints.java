@@ -20,35 +20,37 @@
 package org.openflexo.fib.model;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
 import org.openflexo.fib.model.FIBPanel.Layout;
-import org.openflexo.xmlcode.StringConvertable;
-import org.openflexo.xmlcode.StringEncoder.Converter;
+import org.openflexo.model.annotations.StringConverter;
+import org.openflexo.model.factory.AccessibleProxyObject;
+import org.openflexo.model.factory.ModelFactory;
+import org.openflexo.model.xml.DefaultStringEncoder.Converter;
 
 
-public abstract class ComponentConstraints extends Hashtable<String,String> implements StringConvertable<ComponentConstraints>{
+public interface ComponentConstraints extends AccessibleProxyObject, Map<String, String> {
 
-	private static final Logger logger = Logger.getLogger(FIBComponent.class.getPackage().getName());
+	public static final String INDEX = "index";
 
-	private static final String INDEX = "index";
+	@StringConverter
+	public static final ComponentConstraintsConverter CONVERTER = new ComponentConstraintsConverter();
 
-	public static ComponentConstraintsConverter CONVERTER = new ComponentConstraintsConverter();
-
-	public boolean ignoreNotif = false;
-	
 	public static class ComponentConstraintsConverter extends Converter<ComponentConstraints>
 	{
-		public ComponentConstraintsConverter() 
+		private static final Logger logger = Logger.getLogger(ComponentConstraints.class.getPackage().getName());
+
+		public ComponentConstraintsConverter()
 		{
 			super(ComponentConstraints.class);
 		}
 
 		@Override
-		public ComponentConstraints convertFromString(String aValue) 
+		public ComponentConstraints convertFromString(String aValue, ModelFactory factory)
 		{
 			try {
 				//System.out.println("aValue="+aValue);
@@ -56,6 +58,24 @@ public abstract class ComponentConstraints extends Hashtable<String,String> impl
 				String someConstraints = aValue.substring(aValue.indexOf("(")+1,aValue.length()-1);
 				//System.out.println("constraintType="+constraintType);
 				//System.out.println("someConstraints="+someConstraints);
+				Layout layout = Layout.valueOf(constraintType);
+				switch (layout) {
+				case border:
+					break;
+				case box:
+					break;
+				case flow:
+					break;
+				case grid:
+					break;
+				case gridbag:
+					break;
+				case none:
+					break;
+				case twocols:
+					break;
+
+				}
 				if (constraintType.equals(Layout.border.name())) {
 					return new BorderLayoutConstraints(someConstraints);
 				}
@@ -80,45 +100,31 @@ public abstract class ComponentConstraints extends Hashtable<String,String> impl
 			}
 			catch (StringIndexOutOfBoundsException e) {
 				logger.warning("Syntax error in ComponentConstraints: "+aValue);
+			} catch (IllegalArgumentException e) {
+				logger.warning("Syntax error in ComponentConstraints: " + aValue);
+
 			}
 			return null;
 		}
 
 		@Override
-		public String convertToString(ComponentConstraints value) 
+		public String convertToString(ComponentConstraints value)
 		{
-			if (value == null) return null;
+			if (value == null) {
+				return null;
+			}
 			return value.getStringRepresentation();
 		};
 	}
 
-	public String getStringRepresentation()
-	{
-		StringBuffer returned = new StringBuffer();
-		returned.append(getType().name()+"(");
-		boolean isFirst = true;
-		for (String key : keySet()) {
-			String v = get(key);
-			returned.append((isFirst?"":";")+key+"="+v);
-			isFirst = false;
-		}
-		returned.append(")");
-		return returned.toString();
-	}
-	
-	@Override
-	public ComponentConstraintsConverter getConverter() {
-		return CONVERTER;
-	}
+	public String getStringRepresentation();
 
-	private FIBComponent component;
-
-	public ComponentConstraints() 
+	public ComponentConstraints()
 	{
 		super();
 	}
 
-	protected ComponentConstraints(String someConstraints) 
+	protected ComponentConstraints(String someConstraints)
 	{
 		this();
 		StringTokenizer st = new StringTokenizer(someConstraints,";");
@@ -127,168 +133,61 @@ public abstract class ComponentConstraints extends Hashtable<String,String> impl
 			StringTokenizer st2 = new StringTokenizer(next,"=");
 			String key = null;
 			String value = null;
-			if (st2.hasMoreTokens()) key = st2.nextToken();
-			if (st2.hasMoreTokens()) value = st2.nextToken();
+			if (st2.hasMoreTokens()) {
+				key = st2.nextToken();
+			}
+			if (st2.hasMoreTokens()) {
+				value = st2.nextToken();
+			}
 			if (key != null && value != null) {
 				put(key,value);
 			}
 		}
 	}
 
-	ComponentConstraints(ComponentConstraints someConstraints) 
+	ComponentConstraints(ComponentConstraints someConstraints)
 	{
 		this();
 		ignoreNotif = true;
-		for (String key : someConstraints.keySet()) {
-			put(key,someConstraints.get(key));
-		}
+		putAll(someConstraints);
 		ignoreNotif = false;
 		component = someConstraints.component;
 	}
 
-	@Override
-	public synchronized String put(String key, String value)
-	{
-		String returned = super.put(key, value);
+	public Layout getType();
 
-		if (component != null && !ignoreNotif) {
-			FIBAttributeNotification<ComponentConstraints> notification = new FIBAttributeNotification<ComponentConstraints>(FIBComponent.Parameters.constraints, this, this);
-			component.notify(notification);
-		}
-		
-		return returned;
-	}
-	
-	protected abstract Layout getType();
+	public <E extends Enum> E getEnumValue(String key, Class<E> enumType, E defaultValue);
 
-	public <E extends Enum> E getEnumValue(String key, Class<E> enumType, E defaultValue)
-	{
-		String stringValue = get(key);
-		if (stringValue == null) {
-			ignoreNotif = true;
-			setEnumValue(key,defaultValue);
-			ignoreNotif = false;
-			return defaultValue;
-		}
-		for (E en : enumType.getEnumConstants()) {
-			if (en.name().equals(stringValue)) return en;
-		}
-		logger.warning("Found inconsistent value '"+stringValue+"' as "+enumType);
-		return defaultValue;
-	}
+	public void setEnumValue(String key, Enum value);
 
-	public void setEnumValue(String key, Enum value)
-	{
-		put(key,value.name());
-	}
+	public int getIntValue(String key, int defaultValue);
 
-	public int getIntValue(String key, int defaultValue)
-	{
-		String stringValue = get(key);
-		if (stringValue == null) {
-			ignoreNotif = true;
-			setIntValue(key,defaultValue);
-			ignoreNotif = false;
-			return defaultValue;
-		}
-		return Integer.parseInt(stringValue);
-	}
+	public void setIntValue(String key, int value);
 
-	public void setIntValue(String key, int value)
-	{
-		put(key,((Integer)value).toString());
-	}
+	public float getFloatValue(String key, float defaultValue);
 
-	public float getFloatValue(String key, float defaultValue)
-	{
-		String stringValue = get(key);
-		if (stringValue == null) {
-			ignoreNotif = true;
-			setFloatValue(key,defaultValue);
-			ignoreNotif = false;
-			return defaultValue;
-		}
-		return Float.parseFloat(stringValue);
-	}
+	public void setFloatValue(String key, float value);
 
-	public void setFloatValue(String key, float value)
-	{
-		put(key,((Float)value).toString());
-	}
+	public double getDoubleValue(String key, double defaultValue);
 
-	public double getDoubleValue(String key, double defaultValue)
-	{
-		String stringValue = get(key);
-		if (stringValue == null) {
-			ignoreNotif = true;
-			setDoubleValue(key,defaultValue);
-			ignoreNotif = false;
-			return defaultValue;
-		}
-		return Double.parseDouble(stringValue);
-	}
+	public void setDoubleValue(String key, double value);
 
-	public void setDoubleValue(String key, double value)
-	{
-		put(key,((Double)value).toString());
-	}
+	public boolean getBooleanValue(String key, boolean defaultValue);
 
-	public boolean getBooleanValue(String key, boolean defaultValue)
-	{
-		String stringValue = get(key);
-		if (stringValue == null) {
-			ignoreNotif = true;
-			setBooleanValue(key,defaultValue);
-			ignoreNotif = false;
-			return defaultValue;
-		}
-		return stringValue.equalsIgnoreCase("true");
-	}
+	public void setBooleanValue(String key, boolean value);
 
-	public void setBooleanValue(String key, boolean value)
-	{
-		put(key,value?"true":"false");
-	}
+	public FIBComponent getComponent();
 
-	public FIBComponent getComponent()
-	{
-		return component;
-	}
+	public void setComponent(FIBComponent component);
 
-	public void setComponent(FIBComponent component)
-	{
-		this.component = component;
-	}
-	
 	public abstract void performConstrainedAddition(JComponent container, JComponent contained);
-	
-	public final int getIndex() 
-	{
-		return getIntValue(INDEX,0);
-	}
 
-	public final void setIndex(int x) 
-	{
-		setIntValue(INDEX,x);
-	}
+	public int getIndex();
 
-	public final void setIndexNoNotification(int x) 
-	{
-		ignoreNotif = true;
-		setIntValue(INDEX,x);
-		ignoreNotif = false;
-	}
+	public void setIndex(int x);
 
-	public final boolean hasIndex()
-	{
-		return get(INDEX) != null;
-	}
+	public void setIndexNoNotification(int x);
 
-	@Override
-	public synchronized String toString()
-	{
-		return getClass().getSimpleName()+" "+super.toString();
-	}
-
+	public boolean hasIndex();
 
 }

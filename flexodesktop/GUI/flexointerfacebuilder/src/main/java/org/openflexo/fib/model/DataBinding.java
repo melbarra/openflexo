@@ -19,325 +19,115 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import org.openflexo.antar.binding.AbstractBinding;
-import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingFactory;
 import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
-import org.openflexo.antar.expr.Expression;
-import org.openflexo.antar.expr.Function;
-import org.openflexo.antar.expr.TypeMismatchException;
-import org.openflexo.antar.expr.Variable;
-import org.openflexo.antar.expr.parser.ParseException;
-import org.openflexo.fib.model.FIBComponent.DependancyLoopException;
+import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.fib.model.FIBModelObject.FIBModelAttribute;
-import org.openflexo.toolbox.StringUtils;
-import org.openflexo.xmlcode.StringConvertable;
-import org.openflexo.xmlcode.StringEncoder.Converter;
+import org.openflexo.model.annotations.Constructor;
+import org.openflexo.model.annotations.Constructors;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.NotEmptyChecker;
+import org.openflexo.model.annotations.Parameter;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.StringConverter;
+import org.openflexo.model.factory.AccessibleProxyObject;
+import org.openflexo.model.factory.ModelFactory;
+import org.openflexo.model.xml.DefaultStringEncoder.Converter;
 
-
-public class DataBinding implements StringConvertable<DataBinding>
+@ModelEntity
+@Constructors({ @Constructor({ @Parameter(type = FIBModelObject.class, name = DataBinding.OWNER),
+	@Parameter(type = FIBModelAttribute.class, name = DataBinding.BINDING_ATTRIBUTE),
+	@Parameter(type = BindingDefinition.class, name = DataBinding.BINDING_DEFINITION) }),
+	@Constructor({
+		@Parameter(type = String.class, name=DataBinding.UNPARSED_BINDING)
+	})
+})
+public interface DataBinding extends AccessibleProxyObject
 {
 
-	private static final Logger logger = Logger.getLogger(FIBComponent.class.getPackage().getName());
+	public static final String OWNER = "owner";
+	public static final String BINDING_ATTRIBUTE = "bindingAttribute";
+	public static final String BINDING_DEFINITION = "bindingDefinition";
+	public static final String BINDING = "binding";
+	public static final String UNPARSED_BINDING = "unparsedBinding";
 
-	public static DataBinding.DataBindingConverter CONVERTER = new DataBindingConverter();
+	@StringConverter
+	public static final DataBinding.DataBindingConverter CONVERTER = new DataBindingConverter();
 
 	public static class DataBindingConverter extends Converter<DataBinding>
 	{
-		public DataBindingConverter() 
+		public DataBindingConverter()
 		{
 			super(DataBinding.class);
 		}
 
 		@Override
-		public DataBinding convertFromString(String value) 
+		public DataBinding convertFromString(String value, ModelFactory factory)
 		{
-			return new DataBinding(value);
+			return factory.newInstance(DataBinding.class, value);
 		}
 
 		@Override
-		public String convertToString(DataBinding value) 
+		public String convertToString(DataBinding value)
 		{
 			return value.toString();
 		};
 	}
 
-	@Override
-	public Converter<? extends DataBinding> getConverter() {
-		return CONVERTER;
-	}
+	public Object execute(BindingEvaluationContext context);
 
-	private FIBModelObject owner;
-	private FIBModelAttribute bindingAttribute;
-	private String unparsedBinding;
-	private BindingDefinition bindingDefinition;
-	private AbstractBinding binding;
+	public Object getBindingValue(BindingEvaluationContext context);
 
-	public DataBinding(FIBModelObject owner, FIBModelAttribute attribute, BindingDefinition df) 
-	{
-		setOwner(owner);
-		setBindingAttribute(attribute);
-		setBindingDefinition(df);
-	}
+	public void setBindingValue(Object value, BindingEvaluationContext context);
 
-	public DataBinding(String unparsed) 
-	{
-		unparsedBinding = unparsed;
-	}
+	@Getter(id = BINDING_DEFINITION)
+	public BindingDefinition getBindingDefinition();
 
-	public Object execute(BindingEvaluationContext context)
-	{
-		return getBindingValue(context);
-	}
+	@Setter(id = BINDING_DEFINITION)
+	public void setBindingDefinition(BindingDefinition bindingDefinition);
 
-	public Object getBindingValue(BindingEvaluationContext context)
-	{
-		//logger.info("getBindingValue() "+this);
-		if (getBinding() != null) return getBinding().getBindingValue(context);
-		return null;
-	}
+	@Getter(id = BINDING)
+	public AbstractBinding getBinding();
 
-	public void setBindingValue(Object value, BindingEvaluationContext context)
-	{
-		if (getBinding() != null && getBinding().isSettable()) getBinding().setBindingValue(value,context);
-	}
+	public AbstractBinding getBinding(boolean silentMode);
 
-	@Override
-	public String toString()
-	{
-		if (binding != null) return binding.getStringRepresentation();
-		return unparsedBinding;
-	}
+	@Setter(id = BINDING)
+	public void setBinding(AbstractBinding value);
 
-	public BindingDefinition getBindingDefinition() 
-	{
-		return bindingDefinition;
-	}
+	@NotEmptyChecker(id = BINDING)
+	public boolean hasBinding();
 
-	public void setBindingDefinition(BindingDefinition bindingDefinition) 
-	{
-		this.bindingDefinition = bindingDefinition;
-	}
+	public boolean isValid();
 
-	public AbstractBinding getBinding() 
-	{
-		if (binding == null) finalizeDeserialization();
-		return binding;
-	}
+	public boolean isValid(boolean silentMode);
 
-	public AbstractBinding getBinding(boolean silentMode) 
-	{
-		if (binding == null) finalizeDeserialization(silentMode);
-		return binding;
-	}
+	public boolean isSet();
 
-	/*public void setBinding(AbstractBinding binding) 
-	{
-		this.binding = binding;
-	}*/
+	public boolean isUnset();
 
-	public void setBinding(AbstractBinding value)
-	{
-		AbstractBinding oldValue = this.binding;
-		if (oldValue == null) {
-			if (value == null) return; // No change
-			else {
-				this.binding = value;
-				unparsedBinding = (value != null ? value.getStringRepresentation() : null);
-				updateDependancies();
-				if (bindingAttribute != null) owner.notify(new FIBAttributeNotification<AbstractBinding>(bindingAttribute,oldValue,value));
-				owner.notifyBindingChanged(this);
-				return;
-			}
-		}
-		else {
-			if (oldValue.equals(value)) return; // No change
-			else {
-				this.binding = value;
-				unparsedBinding = (value != null ? value.getStringRepresentation() : null);
-				logger.info("Binding takes now value "+value);
-				updateDependancies();
-				if (bindingAttribute != null) owner.notify(new FIBAttributeNotification<AbstractBinding>(bindingAttribute,oldValue,value));
-				owner.notifyBindingChanged(this);
-				return;
-			}
-		}
-	}
-	
-	public boolean hasBinding()
-	{
-		return binding != null;
-	}
-	
-	public boolean isValid()
-	{
-		return getBinding() != null && getBinding().isBindingValid();
-	}
-	
-	public boolean isValid(boolean silentMode)
-	{
-		return getBinding(silentMode) != null && getBinding(silentMode).isBindingValid();
-	}
-		
-	public boolean isSet()
-	{
-		return unparsedBinding != null || binding != null;
-	}
-	
-	public boolean isUnset()
-	{
-		return unparsedBinding == null && binding == null;
-	}
-	
-	public String getUnparsedBinding() {
-		return unparsedBinding;
-	}
+	@Getter(id = UNPARSED_BINDING)
+	public String getUnparsedBinding();
 
-	public void setUnparsedBinding(String unparsedBinding) {
-		this.unparsedBinding = unparsedBinding;
-		binding = null;
-	}
+	@Setter(id = UNPARSED_BINDING)
+	public void setUnparsedBinding(String unparsedBinding);
 
-	public FIBModelObject getOwner() {
-		return owner;
-	}
+	@Getter(id = OWNER)
+	public FIBModelObject getOwner();
 
-	public void setOwner(FIBModelObject owner)
-	{
-		this.owner = owner;
-	}
+	@Setter(id = OWNER)
+	public void setOwner(FIBModelObject owner);
 
-	protected void finalizeDeserialization(boolean silentMode)
-	{
-		if (getUnparsedBinding() == null) return;
-		
-		/*if (getUnparsedBinding().equals("data.isAcceptableAsSubProcess(SubProcess.component.candidateValue)")) {
-			System.out.println("finalizeDeserialization for "+getUnparsedBinding());
-			System.out.println("Owner: "+getOwner()+" of "+getOwner().getClass());
-			System.out.println("BindingModel: "+getOwner().getBindingModel());
-		}*/
-		
-		//System.out.println("BindingModel: "+getOwner().getBindingModel());
-		if (getOwner() != null) {
-			BindingFactory factory = getOwner().getBindingFactory();
-			factory.setBindable(getOwner());
-			binding = factory.convertFromString(getUnparsedBinding());
-			binding.setBindingDefinition(getBindingDefinition());
-			//System.out.println(">>>>>>>>>>>>>> Binding: "+binding.getStringRepresentation()+" owner="+binding.getOwner());
-			//System.out.println("binding.isBindingValid()="+binding.isBindingValid());
-		}
-		
-		if (!binding.isBindingValid()) {
-			if (!silentMode) {
-				logger.warning("Binding not valid: "+binding+" for owner "+getOwner()+" context="+(getOwner()!=null?(getOwner()).getRootComponent():null));
-				// Dev note: Uncomment following to get more informations
-				/*logger.warning("Binding not valid: "+binding+" for owner "+getOwner()+" context="+(getOwner()!=null?(getOwner()).getRootComponent():null));			logger.info("BindingModel="+getOwner().getBindingModel());
-				binding.debugIsBindingValid();
-				BindingExpression.logger.setLevel(Level.FINE);
-				binding = AbstractBinding.abstractBindingConverter.convertFromString(getUnparsedBinding());
-				binding.setBindingDefinition(getBindingDefinition());
-				binding.isBindingValid();
-				//(new Exception("prout")).printStackTrace();
-				System.exit(-1);*/
-			}
-		}
+	public void finalizeDeserialization(boolean silentMode);
 
-		updateDependancies();
-	}
-	
-	protected void finalizeDeserialization()
-	{
-		finalizeDeserialization(false);
-		if (owner != null && hasBinding() && isValid()) owner.notifyBindingChanged(this);
-	}
+	public void finalizeDeserialization();
 
-	protected void updateDependancies()
-	{
-		if (getOwner() instanceof FIBComponent) {
+	public void updateDependancies();
 
-			if (binding == null) return;
-			
-			Vector<Expression> primitives;
-			try {
-				primitives = Expression.extractPrimitives(binding.getStringRepresentation());
+	@Getter(id=BINDING_ATTRIBUTE)
+	public FIBModelAttribute getBindingAttribute();
 
-				FIBComponent component = (FIBComponent)getOwner();
-				FIBComponent rootComponent = component.getRootComponent();
-				Iterator<FIBComponent> subComponents = rootComponent.subComponentIterator();
-				while (subComponents.hasNext()) {
-					FIBComponent next = subComponents.next();
-					if (next != getOwner()) {
-						if (next instanceof FIBWidget 
-								&& ((FIBWidget)next).getData() != null
-								&& ((FIBWidget)next).getData().isSet()) {
-							String data = ((FIBWidget)next).getData().toString();
-							if (data != null) {
-								for (Expression p : primitives) {
-									String primitiveValue = null;
-									if (p instanceof Variable) primitiveValue = ((Variable)p).getName();
-									if (p instanceof Function) primitiveValue = ((Function)p).getName();
-									if (primitiveValue != null && primitiveValue.startsWith(data)) {
-										try {
-											component.declareDependantOf(next);
-										} catch (DependancyLoopException e) {
-											logger.warning("DependancyLoopException raised while declaring dependancy (data lookup)"
-													+"in the context of binding: "+binding.getStringRepresentation()
-													+" primitive: "+primitiveValue
-													+" component: "+component
-													+" dependancy: "+next
-													+" data: "+data
-													+" message: "+e.getMessage());
-										}
-									}
-								}
-
-							}
-						}
-						if (next.getName() != null) {
-							for (Expression p : primitives) {
-								String primitiveValue = null;
-								if (p instanceof Variable) primitiveValue = ((Variable)p).getName();
-								if (p instanceof Function) primitiveValue = ((Function)p).getName();
-								if (primitiveValue != null && StringUtils.isNotEmpty(next.getName()) && primitiveValue.startsWith(next.getName())) {
-									try {
-										component.declareDependantOf(next);
-									} catch (DependancyLoopException e) {
-										logger.warning("DependancyLoopException raised while declaring dependancy (name lookup)"
-												+"in the context of binding: "+binding.getStringRepresentation()
-												+" primitive: "+primitiveValue
-												+" component: "+component
-												+" dependancy: "+next
-												+" message: "+e.getMessage());
-									}
-								}
-							}
-						}
-					}
-				}
-
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TypeMismatchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	public FIBModelAttribute getBindingAttribute()
-	{
-		return bindingAttribute;
-	}
-	
-	public void setBindingAttribute(FIBModelAttribute bindingAttribute)
-	{
-		this.bindingAttribute = bindingAttribute;
-	}
+	@Setter(id=BINDING_ATTRIBUTE)
+	public void setBindingAttribute(FIBModelAttribute bindingAttribute);
 
 }

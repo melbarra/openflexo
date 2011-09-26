@@ -19,8 +19,8 @@
    
   <entity name="org.openflexo.fib.model.FIBComponent" abstract="yes"> 
     <property name="data" xmlTag="data" attribute="YES"/> 
-    <property name="dataClass" xmlTag="dataClassName" attribute="YES"/> 
-    <property name="controllerClass" xmlTag="controllerClassName" attribute="YES"/> 
+    <property name="dataClass" xmlTag="dataClass" attribute="YES"/> 
+    <property name="controllerClass" xmlTag="controllerClass" attribute="YES"/> 
     <property name="constraints" xmlTag="constraints" attribute="YES"/> 
     <property name="visible" xmlTag="visible" attribute="YES"/> 
     <property name="font" xmlTag="font" attribute="YES"/> 
@@ -35,7 +35,7 @@
     <property name="useScrollBar" xmlTag="useScrollBar" attribute="YES" ignoreDefaultValue="false"/> 
     <property name="horizontalScrollbarPolicy" xmlTag="horizontalScrollbarPolicy" attribute="YES"/> 
     <property name="verticalScrollbarPolicy" xmlTag="verticalScrollbarPolicy" attribute="YES"/> 
-    <property name="explicitDependancies" xmlTag="Dependancy" type="vector"/> 
+    <property name="explicitDependencies" xmlTag="Dependency" type="vector"/> 
     <property name="localizedDictionary" xmlTag="LocalizedDictionary"/> 
   </entity>
    

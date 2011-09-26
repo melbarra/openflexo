@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="gridbag" border="empty" protectContent="false" name="main" dataClassName="org.openflexo.foundation.sg.CreateSourceRepository" font="Lucida Grande,0,11" width="800" height="500">
+<Panel layout="gridbag" border="empty" protectContent="false" name="main" dataClass="org.openflexo.foundation.sg.CreateSourceRepository" font="Lucida Grande,0,11" width="800" height="500">
   <Label label="create_new_source_repository" align="center" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=0;gridWidth=0;insetsTop=20;insetsBottom=20;weightY=0.0;fill=horizontal;weightX=1.0)" font="Lucida Grande,1,15" readOnly="false" manageDynamicModel="false">
     <LocalizedDictionary />
   </Label>
@@ -25,20 +25,20 @@
   </Panel>
   <Panel layout="border" border="empty" borderTitle="Panel" protectContent="false" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=9;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=none;weightX=0.0)" width="80" height="60" />
   <Label label="label" align="center" data="data.errorMessage" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=11;gridWidth=0;insetsTop=10;insetsBottom=0;weightY=0.0;weightX=1.0;fill=horizontal)" visible="(!(data.isValid))" readOnly="false" manageDynamicModel="false">
-    <Dependancy componentName="RepositoryName" />
-    <Dependancy componentName="RepositoryDirectory" />
-    <Dependancy componentName="ImplementationModel" />
-    <Dependancy componentName="NewImplementationModel" />
-    <Dependancy componentName="ImplementationModelName" />
+    <Dependency componentName="RepositoryName" />
+    <Dependency componentName="RepositoryDirectory" />
+    <Dependency componentName="ImplementationModel" />
+    <Dependency componentName="NewImplementationModel" />
+    <Dependency componentName="ImplementationModelName" />
     <LocalizedDictionary />
   </Label>
   <Panel layout="flow" hGap="5" vGap="5" flowAlignment="CENTER" border="empty" borderTitle="Panel" protectContent="false" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=12;gridWidth=0;insetsTop=10;insetsBottom=0;weightY=0.0;weightX=1.0;fill=horizontal)">
     <Button action="controller.validateAndDispose()" buttonType="Trigger" label="validate" constraints="flow(index=0)" font="Lucida Grande,0,13" readOnly="false" enable="data.isValid" manageDynamicModel="false">
-      <Dependancy componentName="RepositoryName" />
-      <Dependancy componentName="RepositoryDirectory" />
-      <Dependancy componentName="ImplementationModel" />
-      <Dependancy componentName="NewImplementationModel" />
-      <Dependancy componentName="ImplementationModelName" />
+      <Dependency componentName="RepositoryName" />
+      <Dependency componentName="RepositoryDirectory" />
+      <Dependency componentName="ImplementationModel" />
+      <Dependency componentName="NewImplementationModel" />
+      <Dependency componentName="ImplementationModelName" />
       <LocalizedDictionary />
     </Button>
     <Button action="controller.cancelAndDispose()" buttonType="Trigger" label="Cancel" constraints="flow(index=1)" font="Lucida Grande,0,13" readOnly="false" manageDynamicModel="false">

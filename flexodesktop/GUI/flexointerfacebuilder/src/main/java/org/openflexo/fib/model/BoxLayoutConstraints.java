@@ -25,54 +25,54 @@ import org.openflexo.fib.model.FIBPanel.Layout;
 
 
 
-public class BoxLayoutConstraints extends ComponentConstraints {
+public interface BoxLayoutConstraints extends ComponentConstraints {
 
 	private static final String ALIGNMENT_X = "alignmentX";
 	private static final String ALIGNMENT_Y = "alignmentY";
-	
-	public BoxLayoutConstraints() 
+
+	public BoxLayoutConstraints()
 	{
 		super();
 	}
-	
-	protected BoxLayoutConstraints(String someConstraints) 
+
+	protected BoxLayoutConstraints(String someConstraints)
 	{
 		super(someConstraints);
 	}
-	
-	BoxLayoutConstraints(ComponentConstraints someConstraints) 
+
+	BoxLayoutConstraints(ComponentConstraints someConstraints)
 	{
 		super(someConstraints);
 	}
-	
-	public BoxLayoutConstraints(int index) 
+
+	public BoxLayoutConstraints(int index)
 	{
 		super();
 		setIndex(index);
 	}
-	
+
 	@Override
 	protected Layout getType()
 	{
 		return Layout.box;
 	}
 
-	public float getAlignmentX() 
+	public float getAlignmentX()
 	{
 		return getFloatValue(ALIGNMENT_X,0.5f);
 	}
 
-	public void setAlignmentX(float x) 
+	public void setAlignmentX(float x)
 	{
 		setFloatValue(ALIGNMENT_X,x);
 	}
 
-	public float getAlignmentY() 
+	public float getAlignmentY()
 	{
 		return getFloatValue(ALIGNMENT_Y,0.5f);
 	}
 
-	public void setAlignmentY(float y) 
+	public void setAlignmentY(float y)
 	{
 		setFloatValue(ALIGNMENT_Y,y);
 	}

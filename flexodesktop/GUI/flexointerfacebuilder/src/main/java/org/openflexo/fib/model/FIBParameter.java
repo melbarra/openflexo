@@ -19,23 +19,29 @@
  */
 package org.openflexo.fib.model;
 
-import org.openflexo.xmlcode.XMLSerializable;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
 
-public class FIBParameter implements XMLSerializable {
+@ModelEntity
+public interface FIBParameter {
 
-	public String name;
-	public String value;
-	
-	public FIBParameter() 
-	{
-		super();
-	}
+	public static final String NAME = "name";
+	public static final String VALUE = "value";
 
-	public FIBParameter(String name, String value) 
-	{
-		super();
-		this.name = name;
-		this.value = value;
-	}
-	
+	@Getter(id = NAME)
+	@XMLAttribute(xmlTag = NAME)
+	public String getName();
+
+	@Setter(id = NAME)
+	public void setName(String name);
+
+	@Getter(id = VALUE)
+	@XMLAttribute(xmlTag = VALUE)
+	public String getValue();
+
+	@Setter(id = VALUE)
+	public void setValue(String value);
+
 }

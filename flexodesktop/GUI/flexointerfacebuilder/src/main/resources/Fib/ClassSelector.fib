@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="twocols" dataClassName="org.openflexo.fib.utils.LoadedClassesInfo" controllerClassName="org.openflexo.fib.utils.ClassSelector$ClassSelectorDetailsPanel$CustomFIBController" font="LucidaGrande,0,11" width="400" height="400">
+<Panel layout="twocols" dataClass="org.openflexo.fib.utils.LoadedClassesInfo" controllerClass="org.openflexo.fib.utils.ClassSelector$ClassSelectorDetailsPanel$CustomFIBController" font="LucidaGrande,0,11" width="400" height="400">
   <Table iteratorClassName="org.openflexo.fib.utils.LoadedClassesInfo$ClassInfo" visibleRowCount="3" rowHeight="18" autoSelectFirstRow="false" createNewRowOnClick="false" boundToSelectionManager="false" showFooter="false" selectionMode="MultipleIntervalSelection" selected="data.selectedClassInfo" textSelectionColor="255,255,255" textNonSelectionColor="0,0,0" backgroundSelectionColor="26,96,206" backgroundSecondarySelectionColor="173,215,255" backgroundNonSelectionColor="255,255,255" data="data.matchingClasses" constraints="twocols(location=center;index=1;expandVertically=true;expandHorizontally=true)" font="LucidaGrande,0,11" name="PotentialMatches" localize="true" manageDynamicModel="true">
     <IconColumn data="iterator.icon" title="" columnWidth="20" resizable="false" displayTitle="true" name="icon" />
     <LabelColumn data="iterator.className" title="class" columnWidth="100" resizable="true" displayTitle="true" name="label" />
@@ -7,16 +7,16 @@
     <LocalizedDictionary />
   </Table>
   <Browser root="data" iteratorClassName="java.lang.Object" visibleRowCount="8" rowHeight="18" boundToSelectionManager="false" selectionMode="DiscontiguousTreeSelection" selected="data.selectedClassInfo" showFooter="true" rootVisible="false" showRootsHandle="true" textSelectionColor="255,255,255" textNonSelectionColor="0,0,0" backgroundSelectionColor="26,96,206" backgroundSecondarySelectionColor="173,215,255" backgroundNonSelectionColor="255,255,255" borderSelectionColor="26,96,206" constraints="twocols(location=center;index=2;expandVertically=true;expandHorizontally=true)" font="LucidaGrande,0,11" name="ClassesBrowser" localize="true" manageDynamicModel="true">
-    <BrowserElement dataClassName="org.openflexo.fib.utils.LoadedClassesInfo$PackageInfo" label="package.packageName" visible="(!(package.isFiltered))" imageIconFile="../Resources/Package.gif" isEditable="false" filtered="true" defaultVisible="true" name="package">
+    <BrowserElement dataClass="org.openflexo.fib.utils.LoadedClassesInfo$PackageInfo" label="package.packageName" visible="(!(package.isFiltered))" imageIconFile="../Resources/Package.gif" isEditable="false" filtered="true" defaultVisible="true" name="package">
       <Children data="package.classes" name="children" />
     </BrowserElement>
-    <BrowserElement dataClassName="org.openflexo.fib.utils.LoadedClassesInfo" label="loadedClasses.toString" isEditable="false" filtered="false" defaultVisible="true" name="loadedClasses">
+    <BrowserElement dataClass="org.openflexo.fib.utils.LoadedClassesInfo" label="loadedClasses.toString" isEditable="false" filtered="false" defaultVisible="true" name="loadedClasses">
       <Children data="loadedClasses.packages" name="children" />
     </BrowserElement>
-    <BrowserElement dataClassName="org.openflexo.fib.utils.LoadedClassesInfo$ClassInfo" label="class.className" icon="class.icon" imageIconFile="../Resources/Class.gif" isEditable="false" filtered="false" defaultVisible="true" name="class">
+    <BrowserElement dataClass="org.openflexo.fib.utils.LoadedClassesInfo$ClassInfo" label="class.className" icon="class.icon" imageIconFile="../Resources/Class.gif" isEditable="false" filtered="false" defaultVisible="true" name="class">
       <Children data="class.memberClasses" name="children" />
     </BrowserElement>
-    <Dependancy componentName="FilteredPackageName" />
+    <Dependency componentName="FilteredPackageName" />
   </Browser>
   <Panel layout="flow" hGap="5" vGap="0" flowAlignment="CENTER" borderTitle="Panel" constraints="twocols(location=center;index=3;expandVertically=false;expandHorizontally=true)">
     <Button action="controller.apply()" buttonType="Trigger" label="apply" constraints="flow(index=0)" font="LucidaGrande,0,12" localize="true" enable="(data.selectedClassInfo != null)">

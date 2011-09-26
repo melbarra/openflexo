@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="twocols" dataClassName="org.openflexo.fge.graphics.TextStyle" font="SansSerif,0,11" width="300" height="140" name="TextStylePanel">
+<Panel layout="twocols" dataClass="org.openflexo.fge.graphics.TextStyle" font="SansSerif,0,11" width="300" height="140" name="TextStylePanel">
   <Label label="background" localize="true" constraints="twocols(location=left;index=4;expandHorizontally=true;expandVertically=false)">
     <LocalizedDictionary />
   </Label>
-  <Label label="orientation" localize="true" dataClassName="" constraints="twocols(location=left;index=6;expandHorizontally=true;expandVertically=false)" visible="(!(data.noStroke))">
+  <Label label="orientation" localize="true" dataClass="" constraints="twocols(location=left;index=6;expandHorizontally=true;expandVertically=false)" visible="(!(data.noStroke))">
     <LocalizedDictionary />
   </Label>
   <Number minValue="-180" maxValue="180" increment="5" numberType="IntegerType" columns="3" data="data.orientation" constraints="twocols(location=right;index=7;expandVertically=false;expandHorizontally=false)" name="LineWidth" localize="true" valueChangedAction="controller.parameterChanged()" />
@@ -52,6 +52,6 @@
     <Localized key="background" lang="French">Arrière-plan</Localized>
     <Localized key="background" lang="Dutch">Background</Localized>
   </LocalizedDictionary>
-  <Parameter name="controllerClassName" value="org.openflexo.fge.view.widget.FIBTextStyleSelector$TextStyleDetailsPanel$CustomFIBController" />
+  <Parameter name="controllerClass" value="org.openflexo.fge.view.widget.FIBTextStyleSelector$TextStyleDetailsPanel$CustomFIBController" />
 </Panel>
 

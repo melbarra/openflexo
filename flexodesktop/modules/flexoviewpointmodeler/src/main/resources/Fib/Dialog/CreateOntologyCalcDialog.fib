@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="gridbag" dataClassName="org.openflexo.foundation.ontology.calc.action.CreateOntologyCalc">
+<Panel layout="gridbag" dataClass="org.openflexo.foundation.ontology.calc.action.CreateOntologyCalc">
   <Label label="creates_new_ontologic_calc" align="center" localize="true" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=0;gridWidth=0;insetsTop=20;insetsBottom=20;weightY=0.0;fill=horizontal;weightX=1.0)" font="Lucida Grande,1,15" />
   <Label label="calc_name" align="right" localize="true" constraints="gridbag(insetsLeft=20;insetsRight=10;gridHeight=1;padY=0;padX=0;anchor=east;gridY=-1;gridX=-1;index=1;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=none;weightX=0.0)" />
   <TextField columns="40" passwd="false" text="TextField" localize="true" name="CalcNameTextField" data="data.newCalcName" constraints="gridbag(insetsLeft=0;insetsRight=20;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=2;gridWidth=0;insetsTop=0;insetsBottom=0;weightY=0.0;fill=horizontal;weightX=1.0)">
-    <Dependancy componentName="OntologyFileSelector" />
+    <Dependency componentName="OntologyFileSelector" />
   </TextField>
   <Label label="calc_uri" align="right" localize="true" constraints="gridbag(insetsLeft=20;insetsRight=10;gridHeight=1;padY=0;padX=0;anchor=east;gridY=-1;gridX=-1;index=3;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=none;weightX=0.0)" />
   <TextField columns="6" passwd="false" text="TextField" localize="true" name="CalcURITextField" data="data.newCalcURI" constraints="gridbag(insetsLeft=0;insetsRight=20;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=4;gridWidth=0;insetsTop=0;insetsBottom=0;weightY=0.0;fill=horizontal;weightX=1.0)">
-    <Dependancy componentName="OntologyFileSelector" />
+    <Dependency componentName="OntologyFileSelector" />
   </TextField>
   <Label label="label" localize="true" data="data.errorMessage" constraints="gridbag(insetsLeft=0;insetsRight=24;gridHeight=1;padY=0;padX=0;anchor=east;gridY=-1;gridX=-1;index=5;gridWidth=0;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=0.0;fill=none)" visible="(!((data.isNewCalcNameValid &amp; data.isNewCalcURIValid)))" font="Dialog,2,10" foregroundColor="255,0,0">
-    <Dependancy componentName="CalcNameTextField" />
-    <Dependancy componentName="CalcURITextField" />
+    <Dependency componentName="CalcNameTextField" />
+    <Dependency componentName="CalcURITextField" />
     <LocalizedDictionary />
   </Label>
   <Label label="ontology_file" align="right" localize="true" constraints="gridbag(insetsLeft=20;insetsRight=10;gridHeight=1;padY=0;padX=0;anchor=east;gridY=-1;gridX=-1;index=6;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=none;weightX=0.0)" />
   <File mode="OpenMode" filter="*.owl" title="Please select an ontology to import as calc ontology" isDirectory="false" data="data.ontologyFile" constraints="gridbag(insetsLeft=0;insetsRight=20;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=7;gridWidth=0;insetsTop=0;insetsBottom=6;weightY=0.0;fill=horizontal;weightX=1.0)" name="OntologyFileSelector" localize="true">
-    <Dependancy componentName="CreatesOntologyButton" />
+    <Dependency componentName="CreatesOntologyButton" />
   </File>
   <Label label="imported_ontologies" localize="true" constraints="gridbag(insetsLeft=20;insetsRight=10;gridHeight=1;padY=0;padX=0;anchor=north_east;gridY=-1;gridX=-1;index=8;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=0.0;fill=none)">
     <LocalizedDictionary />
@@ -26,7 +26,7 @@
     <LabelColumn data="iterator.uRI" title="imported_ontologies" columnWidth="100" resizable="true" displayTitle="true" name="label" />
     <AddAction method="data.addToImportedOntologies(OntologySelector.data)" name="add_action" />
     <RemoveAction method="data.removeFromImportedOntologies(selected)" name="delete_action" />
-    <Dependancy componentName="ImportOntologyButton" />
+    <Dependency componentName="ImportOntologyButton" />
     <LocalizedDictionary />
   </Table>
   <Label label="" localize="true" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=north_east;gridY=-1;gridX=-1;index=10;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=0.0;fill=none)">
@@ -34,7 +34,7 @@
   </Label>
   <Panel layout="border" borderTitle="Panel" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=11;gridWidth=0;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=1.0;fill=horizontal)">
     <Button action="data.createOntology()" buttonType="Trigger" label="creates_ontology" constraints="border(location=east;index=0)" name="CreatesOntologyButton" localize="true" enable="(data.isNewCalcNameValid &amp; data.isNewCalcURIValid)">
-      <Dependancy componentName="CalcURITextField" />
+      <Dependency componentName="CalcURITextField" />
       <LocalizedDictionary />
     </Button>
     <Button action="data.addToImportedOntologies(OntologySelector.data)" buttonType="Trigger" label="import_ontology" constraints="border(location=west;index=1)" name="ImportOntologyButton" localize="true" enable="(OntologySelector.data != null)">
@@ -49,8 +49,8 @@
   <TextArea columns="6" rows="5" text="TextArea" data="data.newCalcDescription" constraints="gridbag(insetsLeft=0;insetsRight=20;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=13;gridWidth=0;insetsTop=0;insetsBottom=20;weightY=1.0;fill=both;weightX=1.0)" localize="true" />
   <Panel layout="flow" hGap="5" vGap="5" flowAlignment="CENTER" borderTitle="Panel" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=14;gridWidth=0;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=1.0;fill=both)">
     <Button action="controller.validateAndDispose()" buttonType="Trigger" label="validate" constraints="flow(index=0)" localize="true" enable="data.isValid">
-      <Dependancy componentName="CalcNameTextField" />
-      <Dependancy componentName="OntologyFileSelector" />
+      <Dependency componentName="CalcNameTextField" />
+      <Dependency componentName="OntologyFileSelector" />
     </Button>
     <Button action="controller.cancelAndDispose()" buttonType="Trigger" label="cancel" constraints="flow(index=1)" localize="true" />
   </Panel>

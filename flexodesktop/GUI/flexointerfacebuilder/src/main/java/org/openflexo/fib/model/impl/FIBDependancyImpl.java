@@ -17,7 +17,7 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openflexo.fib.model;
+package org.openflexo.fib.model.impl;
 
 import java.util.logging.Logger;
 
@@ -25,12 +25,12 @@ import org.openflexo.fib.model.FIBComponent.DependancyLoopException;
 
 
 
-public class FIBDependancy extends FIBModelObject {
+public class FIBDependancyImpl extends FIBModelObjectImpl {
 
 	private static final Logger logger = Logger.getLogger(FIBDependancy.class.getPackage().getName());
 
 	// Owner depends of masterComponent
-	
+
 	private FIBComponent owner;
 	private FIBComponent masterComponent;
 	private String masterComponentName;
@@ -86,10 +86,12 @@ public class FIBDependancy extends FIBModelObject {
 	{
 		super();
 	}
-	
+
 	public String getMasterComponentName()
 	{
-		if (getMasterComponent() != null) return getMasterComponent().getName();
+		if (getMasterComponent() != null) {
+			return getMasterComponent().getName();
+		}
 		return masterComponentName;
 	}
 

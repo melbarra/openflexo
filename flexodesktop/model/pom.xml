@@ -13,9 +13,28 @@
 	<modules>
 		<module>flexofoundation</module>
 		<module>flexoinspector</module>
+		<module>flexopamela</module>
 		<module>flexoutils</module>
 		<module>flexowsclient</module>
 		<module>flexoxmlcode</module>
 	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.15.0-GA</version>
+		</dependency>
+		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
 

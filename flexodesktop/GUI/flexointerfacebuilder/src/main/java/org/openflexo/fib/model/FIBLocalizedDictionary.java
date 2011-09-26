@@ -31,45 +31,45 @@ import org.openflexo.localization.Language;
 import org.openflexo.localization.LocalizedDelegate;
 import org.openflexo.toolbox.StringUtils;
 
-public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedDelegate {
+public interface FIBLocalizedDictionary extends FIBModelObject, LocalizedDelegate {
 
-	private static final Logger logger = Logger.getLogger(FIBLocalizedDictionary.class.getPackage().getName());
+	public static final String COMPONENT = "component";
 
 	private FIBComponent _component;
 	private Vector<FIBLocalizedEntry> _entries;
 	private Hashtable<Language,Hashtable<String,String>> _values;
 	private Vector<DynamicEntry> dynamicEntries = null;
-	
+
 	private boolean isSearchingNewEntries = false;
-	
-	public FIBLocalizedDictionary() 
+
+	public FIBLocalizedDictionary()
 	{
 		_entries = new Vector<FIBLocalizedEntry>();
 		_values = new Hashtable<Language, Hashtable<String,String>>();
 	}
 
-	public FIBComponent getComponent() 
+	public FIBComponent getComponent()
 	{
 		return _component;
 	}
 
-	public void setComponent(FIBComponent component) 
+	public void setComponent(FIBComponent component)
 	{
 		_component = component;
 	}
-	
-	
-	public Vector<FIBLocalizedEntry> getEntries() 
+
+
+	public Vector<FIBLocalizedEntry> getEntries()
 	{
 		return _entries;
 	}
 
-	public void setEntries(Vector<FIBLocalizedEntry> someEntries) 
+	public void setEntries(Vector<FIBLocalizedEntry> someEntries)
 	{
 		_entries = someEntries;
 	}
 
-	public void addToEntries(FIBLocalizedEntry entry) 
+	public void addToEntries(FIBLocalizedEntry entry)
 	{
 		entry.setLocalizedDictionary(this);
 		_entries.add(entry);
@@ -81,13 +81,13 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		}
 		getDictForLang(lang).put(entry.getKey(), entry.getValue());
 	}
-	
+
 	public void removeFromEntries(FIBLocalizedEntry entry)
 	{
 		entry.setLocalizedDictionary(null);
 		_entries.remove(entry);
 	}
-	
+
 	public void append(FIBLocalizedDictionary aDict)
 	{
 		if (aDict == null) return;
@@ -103,14 +103,14 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		}
 		return null;
 	}
-	
+
 	private Hashtable<String,String> getDictForLang(Language lang)
 	{
 		Hashtable<String,String> dict = _values.get(lang);
 		if (dict == null) {
 			dict = new Hashtable<String,String>();
 			_values.put(lang, dict);
-		}		
+		}
 		return dict;
 	}
 
@@ -119,9 +119,9 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		//logger.info("Searched default value for key "+key+" return "+FlexoLocalization.localizedForKey(key));
 		return FlexoLocalization.localizedForKeyAndLanguage(key,language,false,false);
 	}
-	
+
 	@Override
-	public String localizedForKeyAndLanguage(String key, Language language) 
+	public String localizedForKeyAndLanguage(String key, Language language)
 	{
 		if (key == null || StringUtils.isEmpty(key)) return null;
 		//if (isSearchingNewEntries) logger.info("-------> called localizedForKeyAndLanguage() key="+key+" lang="+language);
@@ -158,13 +158,13 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 	}
 
 	@Override
-	public boolean handleNewEntry(String key, Language language) 
+	public boolean handleNewEntry(String key, Language language)
 	{
 		//logger.warning(">>>>>>>>>>>>>>>>>>>>> Cannot find key "+key+" for language "+language);
 		return isSearchingNewEntries;
 		//return false;
 	}
-	
+
 	@Override
 	public FIBComponent getRootComponent()
 	{
@@ -174,12 +174,12 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 	public class DynamicEntry
 	{
 		public String key;
-		
+
 		public DynamicEntry(String aKey)
 		{
 			key = aKey;
 		}
-		
+
 		public String getEnglish()
 		{
 			return localizedForKeyAndLanguage(key, Language.ENGLISH);
@@ -223,7 +223,7 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		}
 		return returned;
 	}
-	
+
 	// This method is really not efficient, but only called in the context of locales editor
 	// Impact of this issue is not really severe.
 	public Vector<DynamicEntry> getDynamicEntries()
@@ -243,7 +243,7 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		}
 		return dynamicEntries;
 	}
-	
+
 	private DynamicEntry getDynamicEntry(String key)
 	{
 		if (key==null) return null;
@@ -252,7 +252,7 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		}
 		return null;
 	}
-	
+
 	public void refresh()
 	{
 		logger.fine("Refresh called on FIBLocalizedDictionary "+Integer.toHexString(hashCode()));
@@ -266,7 +266,7 @@ public class FIBLocalizedDictionary extends FIBModelObject implements LocalizedD
 		logger.warning("Not implemented yet");
 		return null;
 	}
-	
+
 	public void deleteEntry(DynamicEntry entry)
 	{
 		for (Language l : Language.availableValues()) {

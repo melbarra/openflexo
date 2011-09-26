@@ -19,27 +19,34 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.Observable;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 import org.openflexo.antar.binding.Bindable;
-import org.openflexo.antar.binding.BindingFactory;
-import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.fib.FIBLibrary;
-import org.openflexo.xmlcode.KeyValueDecoder;
-import org.openflexo.xmlcode.XMLSerializable;
+import org.openflexo.model.annotations.Adder;
+import org.openflexo.model.annotations.Deleter;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.Getter.Cardinality;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Remover;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
+import org.openflexo.model.annotations.XMLElement;
+import org.openflexo.model.factory.AccessibleProxyObject;
+import org.openflexo.model.factory.CloneableProxyObject;
+import org.openflexo.model.factory.ObservableObject;
 
 
-public abstract class FIBModelObject extends Observable implements Bindable, XMLSerializable {
+@ModelEntity(isAbstract = true)
+public interface FIBModelObject extends AccessibleProxyObject, ObservableObject, CloneableProxyObject, Bindable {
 
-	private static final Logger logger = Logger.getLogger(FIBModelObject.class.getPackage().getName());
+	public static final String PARAMETERS = "parameters";
+	public static final String DESCRIPTION = "description";
+	public static final String NAME = "name";
 
 	public static interface FIBModelAttribute
 	{
 	}
-	
+
 	public static enum Parameters implements FIBModelAttribute
 	{
 		name,
@@ -47,191 +54,47 @@ public abstract class FIBModelObject extends Observable implements Bindable, XML
 		parameters
 	}
 
-	
-	private String name;
-	private String description;
-	
-	private Vector<FIBParameter> parameters = new Vector<FIBParameter>();
-	
-	public FIBModelObject()
-	{
-		super();
-	}
-	
-	public void delete()
-	{	
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
 
-	public void setName(String name)
-	{
-		FIBAttributeNotification<String> notification = requireChange(Parameters.name,name);
-		if (notification != null) {
-			this.name = name;
-			hasChanged(notification);
-		}
-	}
+	@Getter(id = NAME)
+	@XMLAttribute(xmlTag = NAME)
+	public String getName();
 
-	public String getDescription()
-	{
-		return description;
-	}
+	@Setter(id = NAME)
+	public void setName(String name);
 
-	public void setDescription(String description)
-	{
-		FIBAttributeNotification<String> notification = requireChange(Parameters.description,description);
-		if (notification != null) {
-			this.description = description;
-			hasChanged(notification);
-		}
-	}
+	@Getter(id = DESCRIPTION)
+	@XMLAttribute(xmlTag = DESCRIPTION)
+	public String getDescription();
 
-	public String getParameter(String parameterName)
-	{
-		for (FIBParameter p : parameters) {
-			if (parameterName.equals(p.name)) return p.value;
-		}
-		return null;
-	}
-	
-	public Vector<FIBParameter> getParameters()
-	{
-		return parameters;
-	}
+	@Setter(id = DESCRIPTION)
+	public void setDescription(String description);
 
-	public void setParameters(Vector<FIBParameter> parameters)
-	{
-		FIBAttributeNotification<Vector<FIBParameter>> notification = requireChange(Parameters.parameters,parameters);
-		if (notification != null) {
-			this.parameters = parameters;
-			hasChanged(notification);
-		}
-	}
+	@Getter(id = PARAMETERS, cardinality = Cardinality.LIST)
+	@XMLElement
+	public List<FIBParameter> getParameters();
 
-	public void addToParameters(FIBParameter p)
-	{
-		parameters.add(p);
-		setChanged();
-		notifyObservers(new FIBAddingNotification<FIBParameter>(Parameters.parameters, p));
-	}
+	@Setter(id = PARAMETERS)
+	public void setParameters(List<FIBParameter> parameters);
 
-	public void removeFromParameters(FIBParameter p)
-	{
-		parameters.remove(p);
-		setChanged();
-		notifyObservers(new FIBRemovingNotification<FIBParameter>(Parameters.parameters, p));
-	}
+	@Adder(id = PARAMETERS)
+	public void addToParameters(FIBParameter p);
 
-	public FIBParameter createNewParameter()
-	{
-		FIBParameter returned = new FIBParameter("param","value");
-		addToParameters(returned);
-		System.out.println("getParameters()="+getParameters());
-		return returned;
-	}
+	@Remover(id = PARAMETERS)
+	public void removeFromParameters(FIBParameter p);
 
-	public void deleteParameter(FIBParameter p)
-	{
-		removeFromParameters(p);
-	}
-
-	public boolean isParameterAddable()
-	{
-		return true;
-	}
-
-	public boolean isParameterDeletable(FIBParameter p)
-	{
-		return true;
-	}
+	@Deleter
+	public void delete();
 
 	public abstract FIBComponent getRootComponent();
-	
-	@Override
-	public BindingModel getBindingModel() 
-	{
-		if (getRootComponent() != null && getRootComponent() != this) return getRootComponent().getBindingModel();
-		return null;
-	}
-	
-	@Override
-	public BindingFactory getBindingFactory() 
-	{
-		return FIBLibrary.instance().getBindingFactory();
-	}
-	
-	public void finalizeDeserialization() 
-	{
-	}
 
-	// *******************************************************************************
-	// *                                   Utils                                     *
-	// *******************************************************************************
+	public String getParameter(String parameterName);
 
-	protected <T extends Object> void notifyChange(Enum<?> parameterKey, T oldValue, T newValue)
-	{
-		// Never notify unchanged values
-		if (oldValue != null && newValue != null && oldValue.equals(newValue)) return;
-		setChanged();
-		notifyObservers(new FIBModelNotification<T>(parameterKey.name(),oldValue,newValue));
-	}
+	public FIBParameter createNewParameter();
 
-	protected void notifyChange(Enum<?> parameterKey)
-	{
-		notifyChange(parameterKey,null,null);
-	}
+	public void deleteParameter(FIBParameter p);
 
-	protected <T extends Object> void notifyChange(String parameterName, T oldValue, T newValue)
-	{
-		setChanged();
-		notifyObservers(new FIBModelNotification<T>(parameterName,oldValue,newValue));
-	}
+	public boolean isParameterAddable();
 
-	protected <T extends Object> FIBAttributeNotification<T> requireChange(FIBModelAttribute parameterKey, T value)
-	{
-		T oldValue = (T)KeyValueDecoder.objectForKey(this,((Enum<?>)parameterKey).name());
-		if (oldValue == null) {
-			if (value == null) return null; // No change
-			else return new FIBAttributeNotification<T>(parameterKey,oldValue,value);
-		}
-		else {
-			if (oldValue.equals(value)) return null; // No change
-			else return new FIBAttributeNotification<T>(parameterKey,oldValue,value);
-		}
-	}
-
-	public void notify(FIBModelNotification notification)
-	{
-		hasChanged(notification);
-	}
-
-	protected void hasChanged(FIBModelNotification notification)
-	{
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Change attribute "+notification.getAttributeName()+" for object "+this+" was: "+notification.oldValue()+" is now: "+notification.newValue());
-		}
-		setChanged();
-		notifyObservers(notification);
-	}
-
-	public void notifyBindingChanged(DataBinding binding)
-	{
-	}
-	
-	public static boolean equals(Object o1, Object o2)
-	{
-		if (o1 == o2) return true;
-		if (o1 == null) return (o2 == null);
-		else return o1.equals(o2);
-	}
-
-	public static boolean notEquals(Object o1, Object o2)
-	{
-		return !equals(o1,o2);
-	}
+	public boolean isParameterDeletable(FIBParameter p);
 
 }

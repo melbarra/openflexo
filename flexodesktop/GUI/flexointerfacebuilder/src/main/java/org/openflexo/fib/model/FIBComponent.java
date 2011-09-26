@@ -20,45 +20,60 @@
 package org.openflexo.fib.model;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import javax.swing.JLabel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreeNode;
 
 import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.antar.binding.BindingVariableImpl;
-import org.openflexo.antar.binding.ParameterizedTypeImpl;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
-import org.openflexo.fib.controller.FIBComponentDynamicModel;
-import org.openflexo.fib.controller.FIBController;
-import org.openflexo.fib.view.FIBView;
-import org.openflexo.toolbox.StringUtils;
+import org.openflexo.model.annotations.Adder;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.Getter.Cardinality;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Remover;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLAttribute;
+import org.openflexo.model.annotations.XMLElement;
 
-public abstract class FIBComponent extends FIBModelObject implements TreeNode {
+@ModelEntity(isAbstract = true)
+public interface FIBComponent extends FIBModelObject, TreeNode {
 
-	private static final Logger logger = Logger.getLogger(FIBComponent.class.getPackage().getName());
+	public static final Color SECONDARY_SELECTION_COLOR = new Color(173, 215, 255);
+	public static final Color DISABLED_COLOR = Color.GRAY;
 
-	public static Color SECONDARY_SELECTION_COLOR = new Color(173,215,255);
-	public static Color DISABLED_COLOR = Color.GRAY;
+	public static final String INDEX = "index";
+	public static final String DATA = "data";
+	public static final String VISIBLE = "visible";
+	public static final String DATA_CLASS = "dataClass";
+	public static final String CONTROLLER_CLASS = "controllerClass";
+	public static final String FONT = "font";
+	public static final String BACKGROUND_COLOR = "backgroundColor";
+	public static final String FOREGROUND_COLOR = "foregroundColor";
+	public static final String WIDTH = "width";
+	public static final String HEIGHT = "height";
+	public static final String MIN_WIDTH = "minWidth";
+	public static final String MIN_HEIGHT = "minHeight";
+	public static final String MAX_WIDTH = "maxWidth";
+	public static final String MAX_HEIGHT = "maxHeight";
+	public static final String USE_SCROLLBAR = "useScrollBar";
+	public static final String HORIZONTAL_SCROLLBAR_POLICY = "horizontalScrollbarPolicy";
+	public static final String VERTICAL_SCROLLBAR_POLICY = "verticalScrollbarPolicy";
+	public static final String CONSTRAINTS = "constraints";
+	public static final String EXPLICIT_DEPENDENCIES = "explicitDependencies";
+	public static final String LOCALIZED_DICTIONARY = "localizedDictionary";
+	public static final String PARENT = "parent";
 
-	public static BindingDefinition VISIBLE = new BindingDefinition("visible", Boolean.class, BindingDefinitionType.GET, false);
-	private BindingDefinition DATA;
-	
-	public BindingDefinition getDataBindingDefinition()
-	{
-		if (DATA == null) {
-			DATA = new BindingDefinition("data", getDefaultDataClass(), BindingDefinitionType.GET, false);
-		}
-		return DATA;
-	}
-	
+
+	public static final BindingDefinition VISIBLE_BINDING_DEFINITION = new BindingDefinition("visible", Boolean.class,
+			BindingDefinitionType.GET, false);
+
+	public BindingDefinition getDataBindingDefinition();
+
 	public static enum Parameters implements FIBModelAttribute
 	{
 		index,
@@ -84,1190 +99,270 @@ public abstract class FIBComponent extends FIBModelObject implements TreeNode {
 
 	public static enum VerticalScrollBarPolicy
 	{
-		VERTICAL_SCROLLBAR_AS_NEEDED {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
-	    	}
-	    },
-	    VERTICAL_SCROLLBAR_NEVER {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
-	    	}
-	    },
-	    VERTICAL_SCROLLBAR_ALWAYS {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
-	    	}
-	    };    
-	    public abstract int getPolicy();
+		VERTICAL_SCROLLBAR_AS_NEEDED(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED), VERTICAL_SCROLLBAR_NEVER(
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER), VERTICAL_SCROLLBAR_ALWAYS(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		private int policy;
+
+		private VerticalScrollBarPolicy(int policy) {
+			this.policy = policy;
+		}
+
+		public int getPolicy() {
+			return policy;
+		}
 	}
 
 	public static enum HorizontalScrollBarPolicy
 	{
-		HORIZONTAL_SCROLLBAR_AS_NEEDED {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-	    	}
-	    },
-	    HORIZONTAL_SCROLLBAR_NEVER {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
-	    	}
-	    },
-	    HORIZONTAL_SCROLLBAR_ALWAYS {
-	    	@Override
-	    	public int getPolicy() {
-	    		return ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
-	    	}
-	    };    
-	    public abstract int getPolicy();
-	}
+		HORIZONTAL_SCROLLBAR_AS_NEEDED(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), HORIZONTAL_SCROLLBAR_NEVER(
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), HORIZONTAL_SCROLLBAR_ALWAYS(
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-	private DataBinding data;
-	private DataBinding visible;
-	
-	private Font font;
-	private Color backgroundColor;
-	private Color foregroundColor;
-	
-	private Integer width;
-	private Integer height;
+		private int policy;
 
-	private Integer minWidth;
-	private Integer minHeight;
+		private HorizontalScrollBarPolicy(int policy) {
+			this.policy = policy;
+		}
 
-	private Integer maxWidth;
-	private Integer maxHeight;
-
-	private boolean useScrollBar = false;
-	private HorizontalScrollBarPolicy horizontalScrollbarPolicy = null;
-	private VerticalScrollBarPolicy verticalScrollbarPolicy = null;
-	//private String dataClassName;
-	
-	private final Vector<FIBComponent> mayDepends;
-	private final Vector<FIBComponent> mayAlters;
-	
-	private Class dataClass;
-	private Class controllerClass;
-	
-	private FIBContainer parent;
-
-	public FIBComponent() 
-	{
-		super();
-		explicitDependancies = new Vector<FIBDependancy>();
-		mayDepends = new Vector<FIBComponent>();
-		mayAlters = new Vector<FIBComponent>();
+		public int getPolicy() {
+			return policy;
+		}
 	}
 
 	@Override
-	public void delete()
-	{
-		if (getParent() != null) {
-			getParent().removeFromSubComponents(this);
-		}
-		super.delete();
-	}
-	
-	public void setParent(FIBContainer parent) 
-	{
-		this.parent = parent;
-	}
+	@Getter(id = PARENT, inverse=FIBContainer.SUB_COMPONENTS)
+	public FIBContainer getParent();
+
+	@Setter(id = PARENT)
+	public void setParent(FIBContainer parent);
+
+	@Getter(id=CONSTRAINTS)
+	@XMLAttribute
+	public ComponentConstraints getConstraints();
+
+	@Setter(id=CONSTRAINTS)
+	public void setConstraints(ComponentConstraints someConstraints);
+
+	@Getter(id = LOCALIZED_DICTIONARY, inverse = FIBLocalizedDictionary.COMPONENT)
+	@XMLElement
+	public FIBLocalizedDictionary getLocalizedDictionary();
+
+	@Setter(id = LOCALIZED_DICTIONARY)
+	public void setLocalizedDictionary(FIBLocalizedDictionary localizedDictionary);
+
+	@Getter(id = EXPLICIT_DEPENDENCIES, cardinality = Cardinality.LIST, inverse = FIBDependency.OWNER)
+	@XMLElement
+	public List<FIBDependency> getExplicitDependencies();
+
+	@Setter(id = EXPLICIT_DEPENDENCIES)
+	public void setExplicitDependencies(List<FIBDependency> explicitDependencies);
+
+	@Adder(id = EXPLICIT_DEPENDENCIES)
+	public void addToExplicitDependancies(FIBDependency p);
+
+	@Remover(id = EXPLICIT_DEPENDENCIES)
+	public void removeFromExplicitDependancies(FIBDependency p);
+
+	@Getter(id = DATA)
+	@XMLAttribute
+	public DataBinding getData();
+
+	@Setter(id = DATA)
+	public void setData(DataBinding data);
+
+	@Getter(id = VISIBLE, inverse = DataBinding.OWNER)
+	@XMLAttribute
+	public DataBinding getVisible();
+
+	@Setter(id = VISIBLE)
+	public void setVisible(DataBinding visible);
+
+	@Getter(id = DATA_CLASS)
+	@XMLAttribute
+	public Class<?> getDataClass();
+
+	@Setter(id = DATA_CLASS)
+	public void setDataClass(Class<?> dataClass);
+
+	@Getter(id = CONTROLLER_CLASS)
+	@XMLAttribute
+	public Class<?> getControllerClass();
+
+	@Setter(id = CONTROLLER_CLASS)
+	public void setControllerClass(Class<?> controllerClass);
+
+	@Getter(id = FONT)
+	@XMLAttribute
+	public Font getFont();
+
+	@Setter(id = FONT)
+	public void setFont(Font font);
+
+	@Getter(id = BACKGROUND_COLOR)
+	@XMLAttribute
+	public Color getBackgroundColor();
+
+	@Setter(id = BACKGROUND_COLOR)
+	public void setBackgroundColor(Color backgroundColor);
+
+	@Getter(id = FOREGROUND_COLOR)
+	@XMLAttribute
+	public Color getForegroundColor();
+
+	@Setter(id = FOREGROUND_COLOR)
+	public void setForegroundColor(Color foregroundColor);
+
+	@Getter(id = HORIZONTAL_SCROLLBAR_POLICY)
+	@XMLAttribute
+	public HorizontalScrollBarPolicy getHorizontalScrollbarPolicy();
+
+	@Setter(id = HORIZONTAL_SCROLLBAR_POLICY)
+	public void setHorizontalScrollbarPolicy(
+			HorizontalScrollBarPolicy horizontalScrollbarPolicy);
+
+	@Getter(id = VERTICAL_SCROLLBAR_POLICY)
+	@XMLAttribute
+	public VerticalScrollBarPolicy getVerticalScrollbarPolicy();
+
+	@Setter(id = VERTICAL_SCROLLBAR_POLICY)
+	public void setVerticalScrollbarPolicy(
+			VerticalScrollBarPolicy verticalScrollbarPolicy);
+
+	@Getter(id = WIDTH)
+	@XMLAttribute
+	public Integer getWidth();
+
+	@Setter(id = WIDTH)
+	public void setWidth(Integer width);
+
+	@Getter(id = HEIGHT)
+	@XMLAttribute
+	public Integer getHeight();
+
+	@Setter(id = HEIGHT)
+	public void setHeight(Integer height);
+
+	@Getter(id = MIN_WIDTH)
+	@XMLAttribute
+	public Integer getMinWidth();
+
+	@Setter(id = MIN_WIDTH)
+	public void setMinWidth(Integer minWidth);
+
+	@Getter(id = MIN_HEIGHT)
+	@XMLAttribute
+	public Integer getMinHeight();
+
+	@Setter(id = MIN_HEIGHT)
+	public void setMinHeight(Integer minHeight);
+
+	@Getter(id = MAX_WIDTH)
+	@XMLAttribute
+	public Integer getMaxWidth();
+
+	@Setter(id = MAX_WIDTH)
+	public void setMaxWidth(Integer maxWidth);
+
+	@Getter(id = MAX_HEIGHT)
+	@XMLAttribute
+	public Integer getMaxHeight();
+
+	@Setter(id = MAX_HEIGHT)
+	public void setMaxHeight(Integer maxHeight);
+
+	@Getter(id = USE_SCROLLBAR)
+	@XMLAttribute
+	public boolean getUseScrollBar();
+
+	@Setter(id = USE_SCROLLBAR)
+	public void setUseScrollBar(boolean useScrollBar);
+
+	public boolean isRootComponent();
 
 	@Override
-	public FIBContainer getParent() 
-	{
-		return parent;
-	}
+	public FIBComponent getRootComponent();
 
-	/*public Hashtable<String,String> getLayoutConstraints() 
-	{
-		return layoutConstraints;
-	}
+	public void updateBindingModel();
 
-	public String getConstraint(String constraint)
-	{
-		return layoutConstraints.get(constraint);
-	}
+	public List<FIBComponent> getNamedComponents();
 
-	public boolean getBooleanConstraint(String constraint)
-	{
-		return layoutConstraints.get(constraint) != null && layoutConstraints.get(constraint).equalsIgnoreCase("true");
-	}
+	public FIBComponent getComponentNamed(String name);
 
+	public List<FIBComponent> retrieveAllSubComponents();
 
-	public String _getConstraints() 
-	{
-		if (layoutConstraints.size() == 0) return null;
-		StringBuffer returned = new StringBuffer();
-		boolean isFirst = true;
-		for (String key : layoutConstraints.keySet()) {
-			String value = layoutConstraints.get(key);
-			returned.append((isFirst?"":";")+key+"="+value);
-			isFirst = false;
-		}
-		return returned.toString();
-	}
+	public Iterator<FIBComponent> subComponentIterator();
 
-	public void _setConstraints(String someConstraints) 
-	{
-		StringTokenizer st = new StringTokenizer(someConstraints,";");
-		while (st.hasMoreTokens()) {
-			String next = st.nextToken();
-			StringTokenizer st2 = new StringTokenizer(next,"=");
-			String key = null;
-			String value = null;
-			if (st2.hasMoreTokens()) key = st2.nextToken();
-			if (st2.hasMoreTokens()) value = st2.nextToken();
-			if (key != null && value != null) {
-				layoutConstraints.put(key,value);
-			}
-		}
-	}
-*/
-	
-	private ComponentConstraints constraints;
-	
-	public ComponentConstraints getConstraints() 
-	{
-		constraints = _normalizeConstraintsWhenRequired(constraints);
-		return constraints;
-		
-		
-		//logger.info("getConstraints() for "+getName());
-		/*if (getParent() instanceof FIBPanel) {
-			// Init to default value when relevant but null
-			if (constraints == null) {
-				switch (((FIBPanel)getParent()).getLayout()) {
-				case none:
-					constraints = new NoneLayoutConstraints();
-					break;
-				case flow:
-					constraints = new FlowLayoutConstraints();
-					break;
-				case grid:
-					constraints = new GridLayoutConstraints();
-					break;
-				case box:
-					constraints = new BoxLayoutConstraints();
-					break;
-				case border:
-					constraints = new BorderLayoutConstraints();
-					break;
-				case twocols:
-					constraints = new TwoColsLayoutConstraints();
-					break;
-				case gridbag:
-					constraints = new GridBagLayoutConstraints();
-					break;
+	public List<FIBComponent> getMayDepends();
 
-				default:
-					constraints = new NoneLayoutConstraints();
-					break;
-				}
-				constraints.setComponent(this);
-			}
-			// Mutate to right type when necessary
-			switch (((FIBPanel)getParent()).getLayout()) {
-			case none:
-				if (!(constraints instanceof NoneLayoutConstraints)) constraints = new NoneLayoutConstraints(constraints);
-				break;
-			case flow:
-				if (!(constraints instanceof FlowLayoutConstraints)) constraints = new FlowLayoutConstraints(constraints);
-				break;
-			case grid:
-				if (!(constraints instanceof GridLayoutConstraints)) constraints = new GridLayoutConstraints(constraints);
-				break;
-			case box:
-				if (!(constraints instanceof BoxLayoutConstraints)) constraints = new BoxLayoutConstraints(constraints);
-				break;
-			case border:
-				if (!(constraints instanceof BorderLayoutConstraints)) constraints = new BorderLayoutConstraints(constraints);
-				break;
-			case twocols:
-				if (!(constraints instanceof TwoColsLayoutConstraints)) constraints = new TwoColsLayoutConstraints(constraints);
-				break;
-			case gridbag:
-				if (!(constraints instanceof GridBagLayoutConstraints)) constraints = new GridBagLayoutConstraints(constraints);
-				break;
-			default:
-				break;
-			}
-			//logger.info("Return "+constraints);
-			return constraints;
-		}
-		else {
-			// No constraints for a component which container is not custom layouted
-			return null;
-		}*/
-	}
+	public Iterator<FIBComponent> getMayDependsIterator();
 
-	public void setConstraints(ComponentConstraints someConstraints)
-	{
-		//ComponentConstraints normalizedConstraints = constraints;
-		ComponentConstraints normalizedConstraints = _normalizeConstraintsWhenRequired(someConstraints);
-		FIBAttributeNotification<ComponentConstraints> notification = requireChange(
-				Parameters.constraints, normalizedConstraints);
-		if (notification != null) {
-			normalizedConstraints.setComponent(this);
-			this.constraints = normalizedConstraints;
-			hasChanged(notification);
-		}
-	}
+	public Iterator<FIBComponent> getMayAltersIterator();
 
-	private ComponentConstraints _normalizeConstraintsWhenRequired(ComponentConstraints someConstraints) 
-	{
-		if (getParent() instanceof FIBPanel) {
-			// Init to default value when relevant but null
-			if (someConstraints == null) {
-				ComponentConstraints returned;
-				switch (((FIBPanel)getParent()).getLayout()) {
-				case none:
-					returned = new NoneLayoutConstraints();
-					break;
-				case flow:
-					returned = new FlowLayoutConstraints();
-					break;
-				case grid:
-					returned = new GridLayoutConstraints();
-					break;
-				case box:
-					returned = new BoxLayoutConstraints();
-					break;
-				case border:
-					returned = new BorderLayoutConstraints();
-					break;
-				case twocols:
-					returned = new TwoColsLayoutConstraints();
-					break;
-				case gridbag:
-					returned = new GridBagLayoutConstraints();
-					break;
-				default:
-					returned = new NoneLayoutConstraints();
-					break;
-				}
-				returned.setComponent(this);
-				return returned;
-			}
-			// Mutate to right type when necessary
-			switch (((FIBPanel)getParent()).getLayout()) {
-			case none:
-				if (!(someConstraints instanceof NoneLayoutConstraints)) return new NoneLayoutConstraints(someConstraints);
-				break;
-			case flow:
-				if (!(someConstraints instanceof FlowLayoutConstraints)) return new FlowLayoutConstraints(someConstraints);
-				break;
-			case grid:
-				if (!(someConstraints instanceof GridLayoutConstraints)) return new GridLayoutConstraints(someConstraints);
-				break;
-			case box:
-				if (!(someConstraints instanceof BoxLayoutConstraints)) return new BoxLayoutConstraints(someConstraints);
-				break;
-			case border:
-				if (!(someConstraints instanceof BorderLayoutConstraints)) return new BorderLayoutConstraints(someConstraints);
-				break;
-			case twocols:
-				if (!(someConstraints instanceof TwoColsLayoutConstraints)) return new TwoColsLayoutConstraints(someConstraints);
-				break;
-			case gridbag:
-				if (!(someConstraints instanceof GridBagLayoutConstraints)) return new GridBagLayoutConstraints(someConstraints);
-				break;
-			default:
-			}
-			someConstraints.setComponent(this);
-			return someConstraints;
-		}
-		else {
-			// No constraints for a component which container is not custom layouted
-			return someConstraints;
-		}
-	}
+	public void declareDependantOf(FIBComponent aComponent) throws DependancyLoopException;
 
-	/*public String _getConditional() 
-	{
-		return conditional;
-	}
-
-	public void _setConditional(String conditional) 
-	{
-		this.conditional = conditional;
-		DefaultExpressionParser parser = new DefaultExpressionParser();
-		Vector<Variable> variables;
-		try {
-			conditionalExpression = parser.parse(conditional);
-			variables = Expression.extractVariables(conditional);
-			System.out.println("Variables for "+conditional+"\n"+variables);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-		}	
-	}
-
-	public boolean isConditional()
-	{
-		return conditional != null;
-	}
-
-	public boolean evaluateCondition(final Object dataObject)
-	{
-		if (dataObject == null) return false;
-
-		try {
-			Expression returned =  conditionalExpression.evaluate(
-					new EvaluationContext(
-							new ExpressionParser.DefaultConstantFactory(),
-							new VariableFactory() {
-								public Expression makeVariable(Word value) {
-									Object valueObject = FIBKeyValueCoder.getObjectValue(dataObject,value.getValue());
-									if (valueObject instanceof String) {
-										return new Constant.StringConstant((String)valueObject);
-									}
-									else if (valueObject instanceof Enum) {
-										return new Constant.EnumConstant(((Enum)valueObject).name());
-									}
-									else if (valueObject instanceof Integer) {
-										return new Constant.IntegerConstant((Integer)valueObject);
-									}
-									else if (valueObject instanceof Long) {
-										return new Constant.IntegerConstant((Long)valueObject);
-									}
-									else if (valueObject instanceof Short) {
-										return new Constant.IntegerConstant((Short)valueObject);
-									}
-									else if (valueObject instanceof Float) {
-										return new Constant.FloatConstant((Float)valueObject);
-									}
-									else if (valueObject instanceof Double) {
-										return new Constant.FloatConstant((Double)valueObject);
-									}
-									else if (valueObject instanceof Boolean) {
-										return ((Boolean)valueObject ? Constant.BooleanConstant.TRUE : Constant.BooleanConstant.FALSE);
-									}
-									// TODO Handle others
-									return new Variable(value.getValue());
-								}
-							},
-							new ExpressionParser.DefaultFunctionFactory()));
-			System.out.println("After evaluation: "+returned+" of "+returned.getClass().getName());
-			if (returned instanceof BooleanConstant) return ((BooleanConstant)returned).getValue();
-			logger.warning("Could not evaluate: "+conditional+" found: "+returned);
-			return true;
-		}
-		catch (TypeMismatchException e) {
-			e.printStackTrace();
-			logger.warning("TypeMismatch: "+e.getMessage());
-		}
-
-
-		return true;
-	}*/
-
-	public boolean isRootComponent()
-	{
-		return getParent() == null;
-	}
-
-	@Override
-	public FIBComponent getRootComponent()
-	{
-		FIBComponent current = this;
-		while (current != null && !current.isRootComponent()) current = current.getParent();
-		return current;
-	}
-	
-	private BindingModel _bindingModel = null;
-	
-	@Override
-	public BindingModel getBindingModel() 
-	{
-		if (isRootComponent()) {
-			if (_bindingModel == null) createBindingModel();
-			return _bindingModel;
-		}
-		else return super.getBindingModel();
-	}
-	
-	public void updateBindingModel()
-	{
-		logger.fine("updateBindingModel()");
-		if (getRootComponent() != null) {
-			getRootComponent()._bindingModel = null;
-			getRootComponent().createBindingModel();
-		}
-	}
-	
-	private void createBindingModel()
-	{
-		_bindingModel = new BindingModel();
-		
-		/*Class dataClass = null;
-		try {
-			if (dataClassName != null) {
-				dataClass = Class.forName(dataClassName);
-				logger.fine("Found: "+dataClassName);
-			}
-		} catch (ClassNotFoundException e) {
-			logger.warning("Not found: "+dataClassName);
-		}*/
-		//if (dataClass == null) dataClass = Object.class;
-		
-		_bindingModel.addToBindingVariables(new BindingVariableImpl(this, "data", dataClass != null ? dataClass : Object.class ));
-		
-		if (StringUtils.isNotEmpty(getName()) && getDynamicAccessType() != null) {
-			_bindingModel.addToBindingVariables(new BindingVariableImpl(this, getName(), getDynamicAccessType()));
-		}
-
-		Iterator<FIBComponent> it = subComponentIterator();
-		while (it.hasNext()) {
-			FIBComponent subComponent = it.next();
-			if (StringUtils.isNotEmpty(subComponent.getName()) && subComponent.getDynamicAccessType() != null) {
-				_bindingModel.addToBindingVariables(new BindingVariableImpl(this, subComponent.getName(), subComponent.getDynamicAccessType()));
-			}
-		}
-		
-		Class myControllerClass = getControllerClass();
-		if (myControllerClass == null) 
-			myControllerClass = FIBController.class;
-		
-		_bindingModel.addToBindingVariables(new BindingVariableImpl(this, "controller", myControllerClass));
-
-		it = subComponentIterator();
-		while (it.hasNext()) {
-			FIBComponent subComponent = it.next();
-			subComponent.notifiedBindingModelRecreated();
-		}
-		
-		//logger.info("Created binding model at root component level:\n"+_bindingModel);
-	}
-
-	public void notifiedBindingModelRecreated()
-	{
-	}
-		
-	protected boolean deserializationPerformed = false;
-	
-	@Override
-	public void finalizeDeserialization() 
-	{
-		//System.out.println("finalizeDeserialization for "+this+" isRoot="+isRootComponent());
-	
-		super.finalizeDeserialization();
-		
-		if (getRootComponent().getBindingModel() == null) {
-			getRootComponent().createBindingModel();
-		}
-		
-		if (isRootComponent()) updateBindingModel();
-
-		if (data != null) data.finalizeDeserialization();
-		if (visible != null) visible.finalizeDeserialization();
-		
-		deserializationPerformed = true;
-		
-		/*if (conditional != null) {
-			Vector<Variable> variables;
-			try {
-				variables = Expression.extractVariables(conditional);
-				//System.out.println("Variables for "+conditional+"\n"+variables);
-
-				Iterator<FIBComponent> subComponents = getRootComponent().subComponentIterator();
-				while (subComponents.hasNext()) {
-					FIBComponent next = subComponents.next();
-					if (next != this) {
-						if (next instanceof FIBWidget && ((FIBWidget)next).getData() != null) {
-							String data = ((FIBWidget)next).getData().toString();
-							if (data != null) {
-								for (Variable v : variables) {
-									if (v.getName().startsWith(data) || data.startsWith(v.getName())) {
-										mayDepends.add(next);
-										next.mayAlters.add(this);
-										logger.info("Component "+this+" depends of "+next);
-									}
-								}
-							}
-						}
-					}
-				}
-			} catch (ParseException e) {
-				e.printStackTrace();
-			} catch (TypeMismatchException e) {
-				e.printStackTrace();
-			}	
-		}*/
-	}
-
-	public Vector<FIBComponent> getNamedComponents()
-	{
-		Vector<FIBComponent> returned = new Vector<FIBComponent>();
-		for (FIBComponent c : retrieveAllSubComponents()) {
-			if (StringUtils.isNotEmpty(c.getName())) returned.add(c);
-		}
-		return returned;
-	}
-	
-	public FIBComponent getComponentNamed(String name)
-	{
-		for (FIBComponent c : retrieveAllSubComponents()) {
-			if (StringUtils.isNotEmpty(c.getName()) && c.getName().equals(name)) return c; 
-		}
-		return null;
-	}
-	
-	public Vector<FIBComponent> retrieveAllSubComponents()
-	{
-		if (this instanceof FIBContainer) {
-			Vector<FIBComponent> returned = new Vector<FIBComponent>();
-			addAllSubComponents((FIBContainer)this,returned);
-			return returned;
-		}
-		return null;
-	}
-
-	private void addAllSubComponents(FIBContainer c, Vector<FIBComponent> returned)
-	{
-		for (FIBComponent c2 : c.getSubComponents()) {
-			returned.add(c2);
-			if (c2 instanceof FIBContainer) addAllSubComponents((FIBContainer)c2,returned);
-		}
-	}
-
-	public Iterator<FIBComponent> subComponentIterator()
-	{
-		Vector<FIBComponent> allSubComponents = retrieveAllSubComponents();
-		if (allSubComponents == null) return new Iterator<FIBComponent>() {
-			@Override
-			public boolean hasNext() {
-				return false;
-			}
-			@Override
-			public FIBComponent next() {
-				return null;
-			}
-			@Override
-			public void remove() {
-			}
-		};
-		else return allSubComponents.iterator();
-	}
-
-	public Vector<FIBComponent> getMayDepends()
-	{
-		return mayDepends;
-	}
-	
-	public Iterator<FIBComponent> getMayDependsIterator()
-	{
-		return mayDepends.iterator();
-	}
-
-	public Iterator<FIBComponent> getMayAltersIterator() 
-	{
-		return mayAlters.iterator();
-	}
-	
-	public void declareDependantOf(FIBComponent aComponent) throws DependancyLoopException
-	{
-		//logger.info("Component "+this+" depends of "+aComponent);
-		if (aComponent == this) {
-			logger.warning("Forbidden reflexive dependancies");
-			return;
-		}
-		// Look if this dependancy may cause a loop in dependancies
-		try {
-			Vector<FIBComponent> dependancies = new Vector<FIBComponent>();
-			dependancies.add(aComponent);
-			searchLoopInDependanciesWith(aComponent,dependancies);
-		} catch (DependancyLoopException e) {
-			logger.warning("Forbidden loop in dependancies: "+e.getMessage());
-			throw e;
-		}
-		
-		if (!mayDepends.contains(aComponent)) {
-			mayDepends.add(aComponent);
-			logger.fine("Component "+this+" depends of "+aComponent);
-		}
-		if (!aComponent.mayAlters.contains(this)) aComponent.mayAlters.add(this);
-	}
-	
-	private void searchLoopInDependanciesWith(FIBComponent aComponent, Vector<FIBComponent> dependancies) throws DependancyLoopException
-	{
-		for (FIBComponent c : aComponent.mayDepends) {
-			if (c == this) throw new DependancyLoopException(dependancies);
-			Vector<FIBComponent> newVector = new Vector<FIBComponent>();
-			newVector.addAll(dependancies);
-			newVector.add(c);
-			searchLoopInDependanciesWith(c,newVector);
-		}
-	}
-	
-	protected static class DependancyLoopException extends Exception
-	{	
+	public static class DependancyLoopException extends Exception {
 		private final Vector<FIBComponent> dependancies;
-		public DependancyLoopException(Vector<FIBComponent> dependancies)
-		{
+
+		public DependancyLoopException(Vector<FIBComponent> dependancies) {
 			this.dependancies = dependancies;
 		}
+
 		@Override
-		public String getMessage()
-		{
-			return "DependancyLoopException: "+dependancies;
+		public String getMessage() {
+			return "DependancyLoopException: " + dependancies;
 		}
 	}
-	
-	public DataBinding getData() 
-	{
-		if (data == null) data = new DataBinding(this,Parameters.data,getDataBindingDefinition());
-		return data;
-	}
 
-	public void setData(DataBinding data) 
-	{
-		data.setOwner(this);
-		data.setBindingAttribute(Parameters.data);
-		data.setBindingDefinition(getDataBindingDefinition());
-		this.data = data;
-	}
-	
+	public String getIdentifier();
 
-	public DataBinding getVisible() 
-	{
-		if (visible == null) visible = new DataBinding(this,Parameters.visible,VISIBLE);
-		return visible;
-	}
+	public Type getDataType();
 
-	public void setVisible(DataBinding visible) 
-	{
-		visible.setOwner(this);
-		visible.setBindingAttribute(Parameters.visible);
-		visible.setBindingDefinition(VISIBLE);
-		this.visible = visible;
-	}
-	
-	@Override
-	public String toString() 
-	{
-		return getClass().getSimpleName()+" ("+(getName()!=null?getName():(getIdentifier()!=null?getIdentifier():"unnamed"))+")";
-	}
-	
-	public abstract String getIdentifier();
-	
-	public Type getDataType()
-	{
-		if (dataClass == null) return Object.class;
-		return dataClass;
-		
-		/*if (dataClassName == null) return null;
-		if (dataClass == null) {
-			try {
-				dataClass = Class.forName(dataClassName);
-			} catch (ClassNotFoundException e) {
-				logger.warning("Not found: "+dataClassName);
-				dataClass = Object.class;
-			}
-		}
-		return dataClass;*/
-
-	}
-
-	public Class getDataClass()
-	{
-		return dataClass;
-	}
-	
-	public void setDataClass(Class dataClass) 
-	{
-		FIBAttributeNotification<Class> notification = requireChange(
-				Parameters.dataClass, dataClass);
-		if (notification != null) {
-			this.dataClass = dataClass;
-			updateBindingModel();
-			hasChanged(notification);
-		}
-	}
-	
-	public Class getControllerClass()
-	{
-		return controllerClass;
-	}
-	
-	public void setControllerClass(Class controllerClass) 
-	{
-		FIBAttributeNotification<Class> notification = requireChange(
-				Parameters.controllerClass, controllerClass);
-		if (notification != null) {
-			this.controllerClass = controllerClass;
-			updateBindingModel();
-			hasChanged(notification);
-		}
-	}
-	
-	public Type getDefaultDataClass()
-	{
-		return Object.class;
-
-	}
+	public Type getDefaultDataClass();
 
 	// Default behaviour: only data is managed
-	public Type getDynamicAccessType()
-	{
-		if (data != null) {
-			Type[] args = new Type[1];
-			args[0] = getDataType();
-			return new ParameterizedTypeImpl(FIBComponentDynamicModel.class, args);
-		}
-		return null;
-	}
+	public Type getDynamicAccessType();
 
-	public void clearParameters()
-	{
-		getParameters().clear();
-	}
+	public void clearParameters();
 
-	public final Font retrieveValidFont()
-	{
-		if (font == null) {
-			if (!isRootComponent()) return getParent().retrieveValidFont();
-			else return (new JLabel()).getFont(); // Use system default
-		}
-		
-		return getFont();	
-	}
-	
-	public final Color retrieveValidForegroundColor()
-	{
-		if (foregroundColor == null) {
-			if (!isRootComponent()) return getParent().retrieveValidForegroundColor();
-			else return Color.BLACK; // Use default
-		}
-		
-		return getForegroundColor();	
-	}
-	
-	public final Color retrieveValidBackgroundColor()
-	{
-		if (backgroundColor == null) {
-			if (!isRootComponent()) return getParent().retrieveValidBackgroundColor();
-			else return Color.WHITE; // Use system default
-		}
-		
-		return getBackgroundColor();	
-	}
-	
-	public Font getFont()
-	{
-		return font;
-	}
+	public Font retrieveValidFont();
 
-	public void setFont(Font font)
-	{
-		FIBAttributeNotification<Font> notification = requireChange(
-				Parameters.font, font);
-		if (notification != null) {
-			this.font = font;
-			hasChanged(notification);
-		}
-	}
-	
-	public boolean getHasSpecificFont()
-	{
-		return getFont() != null;
-	}
+	public Color retrieveValidForegroundColor();
 
-	public void setHasSpecificFont(boolean aFlag)
-	{
-		if (aFlag) {
-			setFont(retrieveValidFont());
-		}
-		else {
-			setFont(null);
-		}
-	}
-	
-	public boolean getHasSpecificBackgroundColor()
-	{
-		return getBackgroundColor() != null;
-	}
+	public Color retrieveValidBackgroundColor();
 
-	public void setHasSpecificBackgroundColor(boolean aFlag)
-	{
-		if (aFlag) {
-			setBackgroundColor(retrieveValidBackgroundColor());
-		}
-		else {
-			setBackgroundColor(null);
-		}
-	}
-	
-	public boolean getHasSpecificForegroundColor()
-	{
-		return getForegroundColor() != null;
-	}
+	public boolean getHasSpecificFont();
 
-	public void setHasSpecificForegroundColor(boolean aFlag)
-	{
-		if (aFlag) {
-			setForegroundColor(retrieveValidForegroundColor());
-		}
-		else {
-			setForegroundColor(null);
-		}
-	}
-	
-	public Color getBackgroundColor()
-	{
-		return backgroundColor;
-	}
+	public void setHasSpecificFont(boolean aFlag);
 
-	public void setBackgroundColor(Color backgroundColor)
-	{
-		FIBAttributeNotification<Color> notification = requireChange(
-				Parameters.backgroundColor, backgroundColor);
-		if (notification != null) {
-			this.backgroundColor = backgroundColor;
-			hasChanged(notification);
-		}
-	}
+	public boolean getHasSpecificBackgroundColor();
 
-	public Color getForegroundColor()
-	{
-		return foregroundColor;
-	}
+	public void setHasSpecificBackgroundColor(boolean aFlag);
 
-	public void setForegroundColor(Color foregroundColor)
-	{
-		FIBAttributeNotification<Color> notification = requireChange(
-				Parameters.foregroundColor, foregroundColor);
-		if (notification != null) {
-			this.foregroundColor = foregroundColor;
-			hasChanged(notification);
-		}
-	}
+	public boolean getHasSpecificForegroundColor();
 
-	public boolean getUseScrollBar() 
-	{
-		return useScrollBar;
-	}
-
-	public void setUseScrollBar(boolean useScrollBar) 
-	{
-		FIBAttributeNotification<Boolean> notification = requireChange(
-				Parameters.useScrollBar, useScrollBar);
-		if (notification != null) {
-			this.useScrollBar = useScrollBar;
-			if (useScrollBar) {
-				horizontalScrollbarPolicy = HorizontalScrollBarPolicy.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-				verticalScrollbarPolicy = VerticalScrollBarPolicy.VERTICAL_SCROLLBAR_AS_NEEDED;
-			}
-			else {
-				horizontalScrollbarPolicy = null;
-				verticalScrollbarPolicy = null;
-			}
-			hasChanged(notification);
-		}
-	}
-
-	public HorizontalScrollBarPolicy getHorizontalScrollbarPolicy() 
-	{
-		return horizontalScrollbarPolicy;
-	}
-
-	public void setHorizontalScrollbarPolicy(
-			HorizontalScrollBarPolicy horizontalScrollbarPolicy) 
-	{
-		FIBAttributeNotification<HorizontalScrollBarPolicy> notification = requireChange(
-				Parameters.horizontalScrollbarPolicy, horizontalScrollbarPolicy);
-		if (notification != null) {
-			this.horizontalScrollbarPolicy = horizontalScrollbarPolicy;
-			hasChanged(notification);
-		}
-	}
-
-	public VerticalScrollBarPolicy getVerticalScrollbarPolicy() 
-	{
-		return verticalScrollbarPolicy;
-	}
-
-	public void setVerticalScrollbarPolicy(
-			VerticalScrollBarPolicy verticalScrollbarPolicy) 
-	{
-		FIBAttributeNotification<VerticalScrollBarPolicy> notification = requireChange(
-				Parameters.verticalScrollbarPolicy, verticalScrollbarPolicy);
-		if (notification != null) {
-			this.verticalScrollbarPolicy = verticalScrollbarPolicy;
-			hasChanged(notification);
-		}
-	}
-
-
-	public Integer getWidth()
-	{
-		return width;
-	}
-
-	public void setWidth(Integer width)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.width, width);
-		if (notification != null) {
-			this.width = width;
-			hasChanged(notification);
-		}
-	}
-
-	public Integer getHeight()
-	{
-		return height;
-	}
-
-	public void setHeight(Integer height)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.height, height);
-		if (notification != null) {
-			this.height = height;
-			hasChanged(notification);
-		}
-	}
-
-	public Integer getMinWidth()
-	{
-		return minWidth;
-	}
-
-	public void setMinWidth(Integer minWidth)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.minWidth, minWidth);
-		if (notification != null) {
-			this.minWidth = minWidth;
-			hasChanged(notification);
-		}
-	}
-
-	public Integer getMinHeight()
-	{
-		return minHeight;
-	}
-
-	public void setMinHeight(Integer minHeight)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.minHeight, minHeight);
-		if (notification != null) {
-			this.minHeight = minHeight;
-			hasChanged(notification);
-		}
-	}
-
-	public Integer getMaxWidth()
-	{
-		return maxWidth;
-	}
-
-	public void setMaxWidth(Integer maxWidth)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.maxWidth, maxWidth);
-		if (notification != null) {
-			this.maxWidth = maxWidth;
-			hasChanged(notification);
-		}
-	}
-
-	public Integer getMaxHeight()
-	{
-		return maxHeight;
-	}
-
-	public void setMaxHeight(Integer maxHeight)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.maxHeight, maxHeight);
-		if (notification != null) {
-			this.maxHeight = maxHeight;
-			hasChanged(notification);
-		}
-	}
+	public void setHasSpecificForegroundColor(boolean aFlag);
 
 	@Override
-	public void setName(String name)
-	{
-		if (StringUtils.isEmpty(name)) name = null;
-		super.setName(name);
-		if (deserializationPerformed) updateBindingModel();
-	}
-	
-	@Override
-	public void addToParameters(FIBParameter p)
-	{
-		// Little hask to recover previously created fib
-		if (p.name.equals("controllerClassName")) {
-			try {
-				Class myControllerClass = Class.forName(p.value);
-				setControllerClass(myControllerClass);
-			} catch (ClassNotFoundException e) {
-				logger.warning("Could not find class "+p.value);
-			}
-			
-		}
-		else {
-			super.addToParameters(p);
-			if (deserializationPerformed) updateBindingModel();
-		}
-	}
-	
-	public boolean definePreferredDimensions()
-	{
-		return width != null && height != null;
-	}
+	public void addToParameters(FIBParameter p);
 
-	public void setDefinePreferredDimensions(boolean definePreferredDimensions)
-	{
-		if (definePreferredDimensions) {
-			FIBView v = FIBController.makeView(this);
-			Dimension p = v.getJComponent().getPreferredSize();
-			setWidth(p.width);
-			setHeight(p.height);
-			v.delete();
-		}
-		else {
-			setWidth(null);
-			setHeight(null);
-		}
-	}
-	
-	public boolean defineMaxDimensions()
-	{
-		return maxWidth != null && maxHeight != null;
-	}
+	public boolean definePreferredDimensions();
 
-	public void setDefineMaxDimensions(boolean defineMaxDimensions)
-	{
-		if (defineMaxDimensions) {
-			FIBView v = FIBController.makeView(this);
-			setMaxWidth(1024);
-			setMaxHeight(1024);
-			v.delete();
-		}
-		else {
-			setMaxWidth(null);
-			setMaxHeight(null);
-		}
-	}
-	
-	public boolean defineMinDimensions()
-	{
-		return minWidth != null && minHeight != null;
-	}
+	public void setDefinePreferredDimensions(boolean definePreferredDimensions);
 
-	public void setDefineMinDimensions(boolean defineMinDimensions)
-	{
-		if (defineMinDimensions) {
-			FIBView v = FIBController.makeView(this);
-			Dimension p = v.getJComponent().getMinimumSize();
-			setMinWidth(p.width);
-			setMinHeight(p.height);
-			v.delete();
-		}
-		else {
-			setMinWidth(null);
-			setMinHeight(null);
-		}
-	}
-	
-	private Vector<FIBDependancy> explicitDependancies;
-	//private Vector<FIBComponentDependancy> componentDependancies;
-	
-	/*public Vector<FIBComponentDependancy> getComponentDependancies()
-	{
-		if (componentDependancies == null) {
-			componentDependancies = new Vector<FIBComponentDependancy>();
-			for (Iterator<FIBComponent> it=getMayDependsIterator(); it.hasNext();) {
-				componentDependancies.add(new DynamicFIBDependancy(this,it.next()));
-			}
-			componentDependancies.addAll(explicitDependancies);
-		}
-		return componentDependancies;
-	}*/
+	public boolean defineMaxDimensions();
 
-	public Vector<FIBDependancy> getExplicitDependancies()
-	{
-		return explicitDependancies;
-	}
+	public void setDefineMaxDimensions(boolean defineMaxDimensions);
 
-	public void setExplicitDependancies(Vector<FIBDependancy> explicitDependancies)
-	{
-		FIBAttributeNotification<Vector<FIBDependancy>> notification = requireChange(Parameters.explicitDependancies,explicitDependancies);
-		explicitDependancies = null;
-		if (notification != null) {
-			this.explicitDependancies = explicitDependancies;
-			hasChanged(notification);
-		}
-	}
+	public boolean defineMinDimensions();
 
-	public void addToExplicitDependancies(FIBDependancy p)
-	{
-		p.setOwner(this);
-		explicitDependancies.add(p);
-		if (p.getMasterComponent() != null) {
-			try {
-				p.getOwner().declareDependantOf(p.getMasterComponent());
-			} catch (DependancyLoopException e) {
-				logger.warning("DependancyLoopException raised while applying explicit dependancy for "+p.getOwner()+" and "+p.getMasterComponent()+" message: "+e.getMessage());
-			}
-		}
-		//componentDependancies = null;
-		setChanged();
-		notifyObservers(new FIBAddingNotification<FIBDependancy>(Parameters.explicitDependancies, p));
-	}
+	public void setDefineMinDimensions(boolean defineMinDimensions);
 
-	public void removeFromExplicitDependancies(FIBDependancy p)
-	{
-		p.setOwner(null);
-		explicitDependancies.remove(p);
-		//componentDependancies = null;
-		setChanged();
-		notifyObservers(new FIBRemovingNotification<FIBDependancy>(Parameters.explicitDependancies, p));
-	}
+	public FIBDependency createNewExplicitDependancy();
 
-	public FIBDependancy createNewExplicitDependancy()
-	{
-		FIBDependancy returned = new FIBDependancy();
-		addToExplicitDependancies(returned);
-		return returned;
-	}
+	public void deleteExplicitDependancy(FIBDependency p);
 
-	public void deleteExplicitDependancy(FIBDependancy p)
-	{
-		removeFromExplicitDependancies(p);
-	}
+	public FIBLocalizedDictionary retrieveFIBLocalizedDictionary();
 
-	private FIBLocalizedDictionary localizedDictionary;
-	
-	public FIBLocalizedDictionary retrieveFIBLocalizedDictionary()
-	{
-		if (getLocalizedDictionary() == null) {
-			setLocalizedDictionary(new FIBLocalizedDictionary());
-		}
-		return getLocalizedDictionary();
-	}
-
-	public void setLocalizedDictionary(FIBLocalizedDictionary localizedDictionary)
-	{
-		localizedDictionary.setComponent(this);
-		this.localizedDictionary = localizedDictionary;
-	}
-
-	public FIBLocalizedDictionary getLocalizedDictionary()
-	{
-		return localizedDictionary;
-	}
 
 }

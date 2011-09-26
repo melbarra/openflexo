@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="twocols" dataClassName="org.openflexo.fge.graphics.ShadowStyle" font="SansSerif,0,11" width="200" height="150" name="ShadowStylePanel">
+<Panel layout="twocols" dataClass="org.openflexo.fge.graphics.ShadowStyle" font="SansSerif,0,11" width="200" height="150" name="ShadowStylePanel">
   <Label label="draw_shadow" localize="true" constraints="twocols(location=left;index=0;expandVertically=false;expandHorizontally=true)">
     <LocalizedDictionary />
   </Label>
   <CheckBox selected="true" localize="true" name="checkbox" data="data.drawShadow" constraints="twocols(location=right;index=1;expandHorizontally=true;expandVertically=false)" />
-  <Label label="darkness" localize="true" dataClassName="" constraints="twocols(location=left;index=2;expandVertically=false;expandHorizontally=true)" visible="data.drawShadow">
+  <Label label="darkness" localize="true" dataClass="" constraints="twocols(location=left;index=2;expandVertically=false;expandHorizontally=true)" visible="data.drawShadow">
     <LocalizedDictionary />
   </Label>
   <Number minValue="0" maxValue="255" increment="1" numberType="IntegerType" columns="3" data="data.shadowDarkness" constraints="twocols(location=right;index=3;expandHorizontally=false;expandVertically=false)" visible="data.drawShadow" name="LineWidth" localize="true" valueChangedAction="controller.parameterChanged()" />
@@ -44,6 +44,6 @@
     <Localized key="apply" lang="Dutch">Apply</Localized>
     <Localized key="cancel" lang="Dutch">Cancel</Localized>
   </LocalizedDictionary>
-  <Parameter name="controllerClassName" value="org.openflexo.fge.view.widget.FIBShadowStyleSelector$ShadowStyleDetailsPanel$CustomFIBController" />
+  <Parameter name="controllerClass" value="org.openflexo.fge.view.widget.FIBShadowStyleSelector$ShadowStyleDetailsPanel$CustomFIBController" />
 </Panel>
 

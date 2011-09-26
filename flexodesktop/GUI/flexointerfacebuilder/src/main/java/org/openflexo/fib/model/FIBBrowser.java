@@ -32,14 +32,15 @@ import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.antar.binding.ParameterizedTypeImpl;
 import org.openflexo.fib.controller.FIBBrowserDynamicModel;
+import org.openflexo.fib.model.FIBModelObject.FIBModelAttribute;
 
-public class FIBBrowser extends FIBWidget {
+public interface FIBBrowser extends FIBWidget {
 
 	private static final Logger logger = Logger.getLogger(FIBBrowser.class.getPackage().getName());
 
 	private BindingDefinition SELECTED;
 	private BindingDefinition ROOT;
-	
+
 	public BindingDefinition getSelectedBindingDefinition()
 	{
 		if (SELECTED == null) {
@@ -47,7 +48,7 @@ public class FIBBrowser extends FIBWidget {
 		}
 		return SELECTED;
 	}
-	
+
 	public BindingDefinition getRootBindingDefinition()
 	{
 		if (ROOT == null) {
@@ -55,7 +56,7 @@ public class FIBBrowser extends FIBWidget {
 		}
 		return ROOT;
 	}
-	
+
 	public static enum Parameters implements FIBModelAttribute
 	{
 		root,
@@ -77,19 +78,30 @@ public class FIBBrowser extends FIBWidget {
 		borderSelectionColor
 	}
 
-	
+
 	public enum SelectionMode
 	{
 		SingleTreeSelection { @Override
-		public int getMode() { return TreeSelectionModel.SINGLE_TREE_SELECTION;} },
-		ContiguousTreeSelection { @Override
-		public int getMode() { return TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;} },
-		DiscontiguousTreeSelection { @Override
-		public int getMode() { return TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;} };
-		
+			public int getMode() {
+			return TreeSelectionModel.SINGLE_TREE_SELECTION;
+		}
+		},
+		ContiguousTreeSelection {
+			@Override
+			public int getMode() {
+				return TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
+			}
+		},
+		DiscontiguousTreeSelection {
+			@Override
+			public int getMode() {
+				return TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
+			}
+		};
+
 		public abstract int getMode();
 	}
-	
+
 	private DataBinding root;
 	private DataBinding selected;
 
@@ -102,28 +114,27 @@ public class FIBBrowser extends FIBWidget {
 	private boolean showFooter = true;
 	private boolean rootVisible = true;
 	private boolean showRootsHandle = true;
-	
-    private Color textSelectionColor = UIManager.getColor("Tree.selectionForeground");
-    private Color textNonSelectionColor = UIManager.getColor("Tree.textForeground");
-    private Color backgroundSelectionColor = UIManager.getColor("Tree.selectionBackground");
-    private Color backgroundSecondarySelectionColor = SECONDARY_SELECTION_COLOR;
-    private Color backgroundNonSelectionColor = UIManager.getColor("Tree.textBackground");
-    private Color borderSelectionColor = UIManager.getColor("Tree.selectionBorderColor");
-  
+
+	private Color textSelectionColor = UIManager.getColor("Tree.selectionForeground");
+	private Color textNonSelectionColor = UIManager.getColor("Tree.textForeground");
+	private Color backgroundSelectionColor = UIManager.getColor("Tree.selectionBackground");
+	private Color backgroundSecondarySelectionColor = SECONDARY_SELECTION_COLOR;
+	private Color backgroundNonSelectionColor = UIManager.getColor("Tree.textBackground");
+	private Color borderSelectionColor = UIManager.getColor("Tree.selectionBorderColor");
+
 	private Class iteratorClass;
 
 	private Vector<FIBBrowserElement> elements;
 
-	private Hashtable<Class,FIBBrowserElement> elementsForClasses;
+	private Hashtable<Class, FIBBrowserElement> elementsForClasses;
 
-	
-	public FIBBrowser() 
+	public FIBBrowser()
 	{
 		elements = new Vector<FIBBrowserElement>();
 		elementsForClasses = new Hashtable<Class, FIBBrowserElement>();
 	}
-	
-	public DataBinding getRoot() 
+
+	public DataBinding getRoot()
 	{
 		if (root == null) {
 			root = new DataBinding(this,Parameters.root,getRootBindingDefinition());
@@ -131,15 +142,15 @@ public class FIBBrowser extends FIBWidget {
 		return root;
 	}
 
-	public void setRoot(DataBinding root) 
+	public void setRoot(DataBinding root)
 	{
 		root.setOwner(this);
 		root.setBindingAttribute(Parameters.root);
 		root.setBindingDefinition(getRootBindingDefinition());
 		this.root = root;
 	}
-	
-	public DataBinding getSelected() 
+
+	public DataBinding getSelected()
 	{
 		if (selected == null) {
 			selected = new DataBinding(this,Parameters.selected,getSelectedBindingDefinition());
@@ -147,16 +158,16 @@ public class FIBBrowser extends FIBWidget {
 		return selected;
 	}
 
-	public void setSelected(DataBinding selected) 
+	public void setSelected(DataBinding selected)
 	{
 		selected.setOwner(this);
 		selected.setBindingAttribute(Parameters.selected);
 		selected.setBindingDefinition(getSelectedBindingDefinition());
 		this.selected = selected;
 	}
-	
+
 	@Override
-	public void finalizeDeserialization() 
+	public void finalizeDeserialization()
 	{
 		logger.fine("finalizeDeserialization() for FIBTable "+getName());
 		super.finalizeDeserialization();
@@ -168,17 +179,17 @@ public class FIBBrowser extends FIBWidget {
 			selected.finalizeDeserialization();
 		}
 	}
-	
+
 	public Class getIteratorClass()
 	{
 		if (iteratorClass == null) {
-			iteratorClass = Object.class;	
+			iteratorClass = Object.class;
 		}
 		return iteratorClass;
 
 	}
-	
-	public void setIteratorClass(Class iteratorClass) 
+
+	public void setIteratorClass(Class iteratorClass)
 	{
 		FIBAttributeNotification<Class> notification = requireChange(
 				Parameters.iteratorClass, iteratorClass);
@@ -189,12 +200,11 @@ public class FIBBrowser extends FIBWidget {
 	}
 
 	@Override
-	public Type getDefaultDataClass() 
+	public Type getDefaultDataClass()
 	{
 		return Object.class;
 	}
-	
-	
+
 	@Override
 	public Type getDynamicAccessType()
 	{
@@ -203,29 +213,21 @@ public class FIBBrowser extends FIBWidget {
 		args[1] = getIteratorClass();
 		return new ParameterizedTypeImpl(FIBBrowserDynamicModel.class, args);
 	}
-	
+
 	@Override
 	public Boolean getManageDynamicModel()
 	{
 		return true;
 	}
 
-	/*public String getIteratorClassName()
-	{
-		return iteratorClassName;
-	}
-	
-	public void setIteratorClassName(String iteratorClassName)
-	{
-		FIBAttributeNotification<String> notification = requireChange(
-				Parameters.iteratorClassName, iteratorClassName);
-		if (notification != null) {
-			this.iteratorClassName = iteratorClassName;
-			iteratorClass = null;
-			hasChanged(notification);
-		}
-	}*/
-	
+	/*
+	 * public String getIteratorClassName() { return iteratorClassName; }
+	 * 
+	 * public void setIteratorClassName(String iteratorClassName) { FIBAttributeNotification<String> notification = requireChange(
+	 * Parameters.iteratorClassName, iteratorClassName); if (notification != null) { this.iteratorClassName = iteratorClassName;
+	 * iteratorClass = null; hasChanged(notification); } }
+	 */
+
 	public int getVisibleRowCount()
 	{
 		return visibleRowCount;
@@ -271,18 +273,18 @@ public class FIBBrowser extends FIBWidget {
 		}
 	}
 
-	public Vector<FIBBrowserElement> getElements() 
+	public Vector<FIBBrowserElement> getElements()
 	{
 		return elements;
 	}
 
-	public void setElements(Vector<FIBBrowserElement> elements) 
+	public void setElements(Vector<FIBBrowserElement> elements)
 	{
 		this.elements = elements;
 		updateElementsForClasses();
 	}
 
-	public void addToElements(FIBBrowserElement anElement) 
+	public void addToElements(FIBBrowserElement anElement)
 	{
 		anElement.setBrowser(this);
 		elements.add(anElement);
@@ -291,7 +293,7 @@ public class FIBBrowser extends FIBWidget {
 		notifyObservers(new FIBAddingNotification<FIBBrowserElement>(Parameters.elements, anElement));
 	}
 
-	public void removeFromElements(FIBBrowserElement anElement) 
+	public void removeFromElements(FIBBrowserElement anElement)
 	{
 		anElement.setBrowser(null);
 		elements.remove(anElement);
@@ -327,7 +329,7 @@ public class FIBBrowser extends FIBWidget {
 		setChanged();
 		notifyObservers(new FIBAddingNotification<FIBBrowserElement>(Parameters.elements, e));
 	}
-	
+
 	public void moveUp(FIBBrowserElement e)
 	{
 		if (e == null) {
@@ -339,7 +341,7 @@ public class FIBBrowser extends FIBWidget {
 		setChanged();
 		notifyObservers(new FIBAddingNotification<FIBBrowserElement>(Parameters.elements, e));
 	}
-	
+
 	public void moveDown(FIBBrowserElement e)
 	{
 		if (e == null) {
@@ -351,7 +353,7 @@ public class FIBBrowser extends FIBWidget {
 		setChanged();
 		notifyObservers(new FIBAddingNotification<FIBBrowserElement>(Parameters.elements, e));
 	}
-	
+
 	public void moveToBottom(FIBBrowserElement e)
 	{
 		if (e == null) {
@@ -402,7 +404,7 @@ public class FIBBrowser extends FIBWidget {
 		return null;
 	}
 
-	public boolean getShowFooter() 
+	public boolean getShowFooter()
 	{
 		return showFooter;
 	}
@@ -417,7 +419,7 @@ public class FIBBrowser extends FIBWidget {
 		}
 	}
 
-	public boolean getRootVisible() 
+	public boolean getRootVisible()
 	{
 		return rootVisible;
 	}
@@ -437,7 +439,7 @@ public class FIBBrowser extends FIBWidget {
 		return showRootsHandle;
 	}
 
-	public void setShowRootsHandle(boolean showRootsHandle) 
+	public void setShowRootsHandle(boolean showRootsHandle)
 	{
 		FIBAttributeNotification<Boolean> notification = requireChange(
 				Parameters.showRootsHandle, showRootsHandle);
@@ -447,7 +449,7 @@ public class FIBBrowser extends FIBWidget {
 		}
 	}
 
-	public Color getTextSelectionColor() 
+	public Color getTextSelectionColor()
 	{
 		return textSelectionColor;
 	}
@@ -462,12 +464,12 @@ public class FIBBrowser extends FIBWidget {
 		}
 	}
 
-	public Color getTextNonSelectionColor() 
+	public Color getTextNonSelectionColor()
 	{
 		return textNonSelectionColor;
 	}
 
-	public void setTextNonSelectionColor(Color textNonSelectionColor) 
+	public void setTextNonSelectionColor(Color textNonSelectionColor)
 	{
 		FIBAttributeNotification<Color> notification = requireChange(
 				Parameters.textNonSelectionColor, textNonSelectionColor);
@@ -482,7 +484,7 @@ public class FIBBrowser extends FIBWidget {
 		return backgroundSelectionColor;
 	}
 
-	public void setBackgroundSelectionColor(Color backgroundSelectionColor) 
+	public void setBackgroundSelectionColor(Color backgroundSelectionColor)
 	{
 		FIBAttributeNotification<Color> notification = requireChange(
 				Parameters.backgroundSelectionColor, backgroundSelectionColor);
@@ -508,7 +510,7 @@ public class FIBBrowser extends FIBWidget {
 		}
 	}
 
-	public Color getBackgroundNonSelectionColor() 
+	public Color getBackgroundNonSelectionColor()
 	{
 		return backgroundNonSelectionColor;
 	}
@@ -528,7 +530,7 @@ public class FIBBrowser extends FIBWidget {
 		return borderSelectionColor;
 	}
 
-	public void setBorderSelectionColor(Color borderSelectionColor) 
+	public void setBorderSelectionColor(Color borderSelectionColor)
 	{
 		FIBAttributeNotification<Color> notification = requireChange(
 				Parameters.borderSelectionColor, borderSelectionColor);

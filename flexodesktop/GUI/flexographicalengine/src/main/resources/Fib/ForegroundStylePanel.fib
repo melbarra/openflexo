@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="twocols" dataClassName="org.openflexo.fge.graphics.ForegroundStyle" font="SansSerif,0,11" width="270" height="240" name="ForegroundStylePanel">
+<Panel layout="twocols" dataClass="org.openflexo.fge.graphics.ForegroundStyle" font="SansSerif,0,11" width="270" height="240" name="ForegroundStylePanel">
   <Label label="no_stroke" constraints="twocols(location=left;index=0;expandVertically=false;expandHorizontally=true)">
     <LocalizedDictionary />
   </Label>
   <CheckBox selected="true" name="checkbox" data="data.noStroke" constraints="twocols(location=right;index=1;expandHorizontally=true;expandVertically=false)" />
-  <Label label="line_width" dataClassName="" constraints="twocols(location=left;index=2;expandVertically=false;expandHorizontally=true)" visible="(!(data.noStroke))">
+  <Label label="line_width" dataClass="" constraints="twocols(location=left;index=2;expandVertically=false;expandHorizontally=true)" visible="(!(data.noStroke))">
     <LocalizedDictionary />
   </Label>
   <Number minValue="0.1" maxValue="50" increment="0.1" numberType="DoubleType" columns="3" data="data.lineWidth" constraints="twocols(location=right;index=3;expandHorizontally=false;expandVertically=false)" visible="(!(data.noStroke))" name="LineWidth" valueChangedAction="controller.parameterChanged()" />
@@ -107,6 +107,6 @@
     <Localized key="dots_dashes" lang="Dutch">Dots dashes</Localized>
     <Localized key="dot_lines_dashes" lang="Dutch">Dot lines dashes</Localized>
   </LocalizedDictionary>
-  <Parameter name="controllerClassName" value="org.openflexo.fge.view.widget.FIBForegroundStyleSelector$ForegroundStyleDetailsPanel$CustomFIBController" />
+  <Parameter name="controllerClass" value="org.openflexo.fge.view.widget.FIBForegroundStyleSelector$ForegroundStyleDetailsPanel$CustomFIBController" />
 </Panel>
 

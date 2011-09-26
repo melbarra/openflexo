@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="gridbag" border="empty" protectContent="false" dataClassName="org.openflexo.fib.editor.test.TestComponentEDITOR$TestComponentData">
+<Panel layout="gridbag" border="empty" protectContent="false" dataClass="org.openflexo.fib.editor.test.TestComponentEDITOR$TestComponentData">
   <Label label="name" align="left" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=0;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=none;weightX=0.0)" readOnly="false" manageDynamicModel="false">
     <LocalizedDictionary />
   </Label>

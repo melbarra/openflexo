@@ -19,366 +19,70 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.logging.Logger;
-
-import javax.swing.tree.TreeNode;
+import java.util.List;
 
 import org.openflexo.fib.model.FIBPanel.Layout;
+import org.openflexo.model.annotations.Adder;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.Getter.Cardinality;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Remover;
+import org.openflexo.model.annotations.Setter;
+import org.openflexo.model.annotations.XMLElement;
 
+@ModelEntity
+public interface FIBContainer extends FIBComponent {
 
-public abstract class FIBContainer extends FIBComponent {
+	public static final String SUB_COMPONENTS="subComponents";
 
-	private static final Logger logger = Logger.getLogger(FIBContainer.class.getPackage().getName());
-
-	private Vector<FIBComponent> subComponents;
-	
 	public static enum Parameters implements FIBModelAttribute
 	{
 		subComponents
 	}
 
-	public FIBContainer()
-	{
-		subComponents = new Vector<FIBComponent>();
-	}
-	
-	public Vector<FIBComponent> getSubComponents()
-	{
-		return subComponents;
-	}
-	
-	public void setSubComponents(Vector<FIBComponent> someComponents)
-	{
-		FIBAttributeNotification<Vector<FIBComponent>> notification = requireChange(Parameters.subComponents,someComponents);
-		if (notification != null) {
-			subComponents = someComponents;
-			hasChanged(notification);
-		}
-	}
-	
-	public void addToSubComponents(FIBComponent aComponent)
-	{
-		addToSubComponents(aComponent,null);
-	}
-	
-	public void addToSubComponents(FIBComponent aComponent,ComponentConstraints someConstraints)
-	{
-		aComponent.setParent(this);
-		if (someConstraints != null) {
-			aComponent.getConstraints().ignoreNotif = true;
-			for (String key : someConstraints.keySet()) {
-				//System.out.println(aComponent.getConstraints().getClass().getName()+": Put constraint "+key+"="+someConstraints.get(key));
-				aComponent.getConstraints().put(key,someConstraints.get(key));
-			}
-			aComponent.getConstraints().ignoreNotif = false;
-		}
-		subComponents.add(aComponent);
-		if ((aComponent instanceof FIBWidget)
-				&& ((FIBWidget)aComponent).getManageDynamicModel()) {
-			if (deserializationPerformed) updateBindingModel();
-		}
-		setChanged();
-		notifyObservers(new FIBAddingNotification<FIBComponent>(Parameters.subComponents, aComponent));
-	}
-	
-	public FIBComponent getSubComponentNamed(String name)
-	{
-		for (FIBComponent c : subComponents) {
-			if (c.getName() != null && c.getName().equals(name)) return c;
-		}
-		return null;
-	}
-	
-	public void removeFromSubComponents(FIBComponent aComponent)
-	{
-		removeFromSubComponentsNoNotification(aComponent);
-		setChanged();
-		notifyObservers(new FIBRemovingNotification<FIBComponent>(Parameters.subComponents, aComponent));
-	}
-		
-	public void removeFromSubComponentsNoNotification(FIBComponent aComponent)
-	{
-		aComponent.setParent(null);
-		subComponents.remove(aComponent);
-	}
-		
-	@Override
-	public Enumeration<FIBComponent> children() 
-	{
-		return getSubComponents().elements();
-	}
+	@Getter(id = SUB_COMPONENTS, cardinality = Cardinality.LIST)
+	@XMLElement
+	public List<FIBComponent> getSubComponents();
 
-	@Override
-	public boolean getAllowsChildren() 
-	{
-		return true;
-	}
+	@Setter(id = SUB_COMPONENTS)
+	public void setSubComponents(List<FIBComponent> someComponents);
 
-	@Override
-	public FIBComponent getChildAt(int childIndex) 
-	{
-		return getSubComponents().get(childIndex);
-	}
+	@Adder(id = SUB_COMPONENTS)
+	public void addToSubComponents(FIBComponent aComponent);
 
-	@Override
-	public int getChildCount() 
-	{
-		return getSubComponents().size();
-	}
+	public void addToSubComponents(FIBComponent aComponent, ComponentConstraints someConstraints);
 
-	@Override
-	public int getIndex(TreeNode node) 
-	{
-		return getSubComponents().indexOf(node);
-	}
+	public FIBComponent getSubComponentNamed(String name);
 
-	@Override
-	public boolean isLeaf() 
-	{
-		return getSubComponents().size() == 0;
-	}
+	@Remover(id=SUB_COMPONENTS)
+	public void removeFromSubComponents(FIBComponent aComponent);
 
-	//public static final String INHERITED = "Inherited";
-	
-	public void append(FIBContainer container)
-	{
-		//logger.info(toString()+" append "+container);
-		
-		//if (this instanceof FIBTab && ())
-		
-		Vector<FIBComponent> addedComponents = new Vector<FIBComponent>();
-		for (int i=container.getSubComponents().size()-1; i>=0; i--) {
-			FIBComponent c2 = container.getSubComponents().get(i);
-			boolean merged = false;
-			if (c2.getName() != null && (c2 instanceof FIBContainer)) {
-				for (FIBComponent c1 : getSubComponents()) {
-					if (c2.getName().equals(c1.getName()) && (c1 instanceof FIBContainer)) {
-						((FIBContainer)c1).append((FIBContainer)c2);
-						merged = true;
-						logger.fine("Merged "+c1+" and "+c2);
-						break;
-					}
-				}
-			}
-			if (!merged) {
-				// Is there a component already named same as the one to be added ?
-				// (In this case, do NOT add it, the redefinition override parent behaviour)
-				FIBComponent overridingComponent = getSubComponentNamed(c2.getName());
-				if (overridingComponent == null) {
-					c2.setParent(this);
-					Integer previousIndex = null;
-					if (subComponents != null 
-							&& subComponents.size() > 0
-							&& subComponents.firstElement().getConstraints() != null
-							&& subComponents.firstElement().getConstraints().hasIndex())
-						previousIndex = subComponents.firstElement().getConstraints().getIndex();
-					//if (previousIndex == null) previousIndex=0;
-					subComponents.insertElementAt(c2, 0);
-					if (previousIndex != null && c2.getConstraints() != null && !c2.getConstraints().hasIndex()) c2.getConstraints().setIndexNoNotification(previousIndex-1);
-					//logger.fine("Added "+c2+" into "+this+" index="+(previousIndex-1));
-					addedComponents.add(c2);
-					//c2.finalizeDeserialization();
-				}
-				else {
-					if (overridingComponent.getParameter("hidden") != null
-							&& overridingComponent.getParameter("hidden").equalsIgnoreCase("true")) {
-						// Super property must be shadowed
-						removeFromSubComponents(overridingComponent);
-					}
-				}
-			}
-		}
-		
-		if (container.getLocalizedDictionary() != null) {
-			retrieveFIBLocalizedDictionary().append(container.getLocalizedDictionary());
-		}
-		
-		updateBindingModel();
-		for (FIBComponent c : addedComponents) recursivelyFinalizeDeserialization(c);
-		finalizeDeserialization();
-	}
-	
-	private void recursivelyFinalizeDeserialization(FIBComponent c) 
-	{
-		c.finalizeDeserialization();
-		if (c instanceof FIBContainer) {
-			for (FIBComponent c2 : ((FIBContainer) c).getSubComponents()) recursivelyFinalizeDeserialization(c2);
-		}
-	}
+	public void removeFromSubComponentsNoNotification(FIBComponent aComponent);
 
-	// Default layout is built-in: only FIBPanel manage a custom layout, 
+
+
+	public void append(FIBContainer container);
+
+	// Default layout is built-in: only FIBPanel manage a custom layout,
 	// where this method is overriden
-	public Layout getLayout() 
-	{
-		return null;
-	}
+	public Layout getLayout();
 
-	// Not permitted since default layout is built-in: only FIBPanel 
+	// Not permitted since default layout is built-in: only FIBPanel
 	// manage a custom layout, where this method is overriden
-	public void setLayout(Layout layout) {
-	}
+	public void setLayout(Layout layout);
 
-	@Override
-	public void finalizeDeserialization()
-	{
-		super.finalizeDeserialization();
+	public void oldFinalizeDeserialization();
 
-		//int currentIndex = 0;
+	public void componentFirst(FIBComponent c);
 
-		/*System.out.println("*********************************************");
+	public void componentUp(FIBComponent c);
 
-		System.out.println("Avant le bazar: ");
-		for (FIBComponent c : subComponents) {
-			if (c.getConstraints() != null) {
-				if (!c.getConstraints().hasIndex()) {
-					System.out.println("> Index: ? "+c);
-				}
-				else {
-					System.out.println("> Index: "+c.getConstraints().getIndex()+" "+c);
-				}
-			}
-		}*/
-		
-		/*for (FIBComponent c : subComponents) {
-			if (c.getConstraints() != null) {
-				if (!c.getConstraints().hasIndex()) {
-					c.getConstraints().setIndex(currentIndex);
-					currentIndex++;
-				}
-				else {
-					currentIndex = c.getConstraints().getIndex()+1;
-				}
-			}
-		}*/
-		
-		/*System.out.println("Apres le bazar: ");
-		for (FIBComponent c : subComponents) {
-			if (c.getConstraints() != null) {
-				if (!c.getConstraints().hasIndex()) {
-					System.out.println("> Index: ? "+c);
-				}
-				else {
-					System.out.println("> Index: "+c.getConstraints().getIndex()+" "+c);
-				}
-			}
-		}
-		
-		System.out.println("*********************************************");*/
+	public void componentDown(FIBComponent c);
 
-	}
+	public void componentLast(FIBComponent c);
 
-	public void oldFinalizeDeserialization()
-	{
-		super.finalizeDeserialization();
+	public void recursivelyReorderComponents();
 
-		int currentIndex = 0;
-
-		for (FIBComponent c : subComponents) {
-			if (c.getConstraints() != null) {
-				if (!c.getConstraints().hasIndex()) {
-					c.getConstraints().setIndex(currentIndex);
-					currentIndex++;
-				}
-				else {
-					int desiredIndex = c.getConstraints().getIndex();
-					if (desiredIndex >= currentIndex) {
-						currentIndex = desiredIndex+1;						
-					}
-					else {
-						//System.out.println("Ah ca chie, on a un index de "+desiredIndex+" alors qu'on est a: "+currentIndex+" pour "+c);
-						c.getConstraints().setIndex(currentIndex);
-						currentIndex++;
-					}
-					//currentIndex = c.getConstraints().getIndex()+1;
-				}
-			}
-		}
-	}
-
-	public void componentFirst(FIBComponent c)
-	{
-		sortComponentsUsingIndex();
-		subComponents.remove(c);
-		subComponents.insertElementAt(c, 0);
-		reindexComponents();
-		notifyComponentIndexChanged(c);
-	}
-	
-	public void componentUp(FIBComponent c)
-	{
-		sortComponentsUsingIndex();
-		int index = subComponents.indexOf(c);
-		subComponents.remove(c);
-		subComponents.insertElementAt(c,index-1);
-		reindexComponents();
-		notifyComponentIndexChanged(c);
-	}
-	
-	public void componentDown(FIBComponent c)
-	{
-		sortComponentsUsingIndex();
-		int index = subComponents.indexOf(c);
-		subComponents.remove(c);
-		subComponents.insertElementAt(c,index+1);
-		reindexComponents();
-		notifyComponentIndexChanged(c);
-	}
-	
-	public void componentLast(FIBComponent c)
-	{
-		sortComponentsUsingIndex();
-		subComponents.remove(c);
-		subComponents.add(c);
-		reindexComponents();
-		notifyComponentIndexChanged(c);
-	}
-	
-	public void recursivelyReorderComponents()
-	{
-		reorderComponents();
-		for (FIBComponent c : getSubComponents()) {
-			if (c instanceof FIBContainer) ((FIBContainer)c).recursivelyReorderComponents();
-		}
-	}
-
-	public void reorderComponents()
-	{
-		sortComponentsUsingIndex();
-		reindexComponents();
-	}
-	
-	private void notifyComponentIndexChanged(FIBComponent component)
-	{
-		FIBAttributeNotification<ComponentConstraints> notification 
-		= new FIBAttributeNotification<ComponentConstraints>(FIBComponent.Parameters.constraints, component.getConstraints(), component.getConstraints());
-		component.notify(notification);
-		setChanged();
-		notifyObservers(new FIBAttributeNotification<Vector<FIBComponent>>(Parameters.subComponents, subComponents));
-	}
-
-	private void sortComponentsUsingIndex()
-	{
-		Collections.sort(subComponents,new Comparator<FIBComponent>() {
-			@Override
-			public int compare(FIBComponent c1, FIBComponent c2) {
-				if (c1.getConstraints() == null || c2.getConstraints() == null) return 0;
-				return c1.getConstraints().getIndex()-c2.getConstraints().getIndex();
-			};
-		});
-	}
-
-	private void reindexComponents()
-	{
-		int index = 0;
-		for (FIBComponent c : subComponents) {
-			if (c.getConstraints() != null) {
-				c.getConstraints().setIndexNoNotification(index++);
-			}
-		}
-	}
+	public void reorderComponents();
 
 }
