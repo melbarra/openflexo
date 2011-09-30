@@ -19,72 +19,20 @@
  */
 package org.openflexo.fib.model;
 
-import javax.swing.JComponent;
+import org.openflexo.model.annotations.ModelEntity;
 
-import org.openflexo.fib.model.FIBPanel.Layout;
+@ModelEntity
+public interface GridLayoutConstraints extends ComponentConstraints {
 
+	public static final String X = "x";
+	public static final String Y = "y";
 
+	public int getX();
 
-public class GridLayoutConstraints extends ComponentConstraints {
+	public void setX(int x);
 
-	private static final String X = "x";
-	private static final String Y = "y";
-	
-	public int getX() 
-	{
-		return getIntValue(X,0);
-	}
+	public int getY();
 
-	public void setX(int x) 
-	{
-		setIntValue(X,x);
-	}
-
-	public int getY() 
-	{
-		return getIntValue(Y,0);
-	}
-
-	public void setY(int y) 
-	{
-		setIntValue(Y,y);
-	}
-
-	public GridLayoutConstraints() 
-	{
-		super();
-	}
-	
-	public GridLayoutConstraints(int x, int y) 
-	{
-		this();
-		setX(x);
-		setY(y);
-	}
-	
-	protected GridLayoutConstraints(String someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	GridLayoutConstraints(ComponentConstraints someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	@Override
-	protected Layout getType()
-	{
-		return Layout.grid;
-	}
-
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		container.add(contained);
-	}
-
-
+	public void setY(int y);
 
 }

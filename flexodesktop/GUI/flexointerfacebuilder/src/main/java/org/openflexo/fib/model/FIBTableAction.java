@@ -19,19 +19,14 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.logging.Logger;
-
 import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingModel;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
+import org.openflexo.model.annotations.ModelEntity;
 
 
-public abstract class FIBTableAction extends FIBModelObject {
+@ModelEntity(isAbstract = true)
+public interface FIBTableAction extends FIBModelObject {
 
-	private static final Logger logger = Logger.getLogger(FIBTableAction.class.getPackage().getName());
-
-	private FIBTable table;
-	
 	public static enum Parameters implements FIBModelAttribute
 	{
 		method,
@@ -44,104 +39,37 @@ public abstract class FIBTableAction extends FIBModelObject {
 		Delete,
 		Custom
 	}
-	
-	private DataBinding method;
-	private DataBinding isAvailable;
 
-	public static BindingDefinition METHOD = new BindingDefinition("method", Object.class, BindingDefinitionType.EXECUTE, false);
-	public static BindingDefinition IS_AVAILABLE = new BindingDefinition("isAvailable", Boolean.class, BindingDefinitionType.GET, false);
+	public static final BindingDefinition METHOD = new BindingDefinition("method", Object.class, BindingDefinitionType.EXECUTE, false);
+	public static final BindingDefinition IS_AVAILABLE = new BindingDefinition("isAvailable", Boolean.class, BindingDefinitionType.GET,
+			false);
 
-    public FIBTable getTable() 
-    {
-		return table;
+	public FIBTable getTable();
+
+	public void setTable(FIBTable table);
+
+	public DataBinding getMethod();
+
+	public void setMethod(DataBinding method);
+
+	public DataBinding getIsAvailable();
+
+	public void setIsAvailable(DataBinding isAvailable);
+
+	public ActionType getActionType();
+
+	@ModelEntity
+	public interface FIBAddAction extends FIBTableAction {
 	}
 
-	public void setTable(FIBTable table)
-	{
-		this.table = table;
+	@ModelEntity
+	public interface FIBRemoveAction extends FIBTableAction {
+
 	}
 
-	@Override
-	public FIBComponent getRootComponent()
-	{
-		if (getTable() != null) return getTable().getRootComponent();
-		return null;
-	}
-	
-	public DataBinding getMethod() 
-	{
-		if (method == null) method = new DataBinding(this,Parameters.method,METHOD);
-		return method;
-	}
+	@ModelEntity
+	public interface FIBCustomAction extends FIBTableAction {
 
-	public void setMethod(DataBinding method) 
-	{
-		method.setOwner(this);
-		method.setBindingAttribute(Parameters.method);
-		method.setBindingDefinition(METHOD);
-		this.method = method;
-	}
-	
-	public DataBinding getIsAvailable() 
-	{
-		if (isAvailable == null) isAvailable = new DataBinding(this,Parameters.isAvailable,IS_AVAILABLE);
-		return isAvailable;
-	}
-
-	public void setIsAvailable(DataBinding isAvailable) 
-	{
-		isAvailable.setOwner(this);
-		isAvailable.setBindingAttribute(Parameters.isAvailable);
-		isAvailable.setBindingDefinition(IS_AVAILABLE);
-		this.isAvailable = isAvailable;
-	}
-	
-	@Override
-	public BindingModel getBindingModel() 
-	{
-		if (getTable() != null) return getTable().getActionBindingModel();
-		return null;
-	}
-	
-	@Override
-	public void finalizeDeserialization() 
-	{
-		logger.fine("finalizeDeserialization() for FIBTableAction "+getName());
-		super.finalizeDeserialization();
-		if (method != null) {
-			method.finalizeDeserialization();
-		}
-	}
-
-	public abstract ActionType getActionType();
-
-	public static class FIBAddAction extends FIBTableAction {
-
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Add;
-		}
-	}
-
-	public static class FIBRemoveAction extends FIBTableAction {
-
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Delete;
-		}
-	}
-
-	public static class FIBCustomAction extends FIBTableAction {
-
-		public boolean isStatic = false;
-		
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Custom;
-		}
 	}
 
 }

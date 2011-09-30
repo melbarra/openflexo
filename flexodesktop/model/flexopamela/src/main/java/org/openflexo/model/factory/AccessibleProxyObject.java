@@ -14,4 +14,9 @@ public interface AccessibleProxyObject {
 	public void performSuperDeleter();
 
 	public Object performSuperFinder(Object value);
+
+	public void enableNotifications();
+
+	public void disableNotifications();
+
 }

@@ -19,23 +19,25 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
 import org.openflexo.fib.model.FIBPanel.Layout;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ModelEntity;
+import org.openflexo.model.annotations.Setter;
 import org.openflexo.model.annotations.StringConverter;
 import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.model.factory.ModelFactory;
 import org.openflexo.model.xml.DefaultStringEncoder.Converter;
 
-
+@ModelEntity(isAbstract = true)
 public interface ComponentConstraints extends AccessibleProxyObject, Map<String, String> {
 
 	public static final String INDEX = "index";
+	public static final String COMPONENT = "component";
 
 	@StringConverter
 	public static final ComponentConstraintsConverter CONVERTER = new ComponentConstraintsConverter();
@@ -77,25 +79,24 @@ public interface ComponentConstraints extends AccessibleProxyObject, Map<String,
 
 				}
 				if (constraintType.equals(Layout.border.name())) {
-					return new BorderLayoutConstraints(someConstraints);
+					return factory.newInstance(BorderLayoutConstraints.class, someConstraints);
 				}
 				else if (constraintType.equals(Layout.flow.name())) {
-					return new FlowLayoutConstraints(someConstraints);
+					return factory.newInstance(FlowLayoutConstraints.class, someConstraints);
 				}
 				else if (constraintType.equals(Layout.grid.name())) {
-					return new GridLayoutConstraints(someConstraints);
+					return factory.newInstance(GridLayoutConstraints.class, someConstraints);
 				}
 				else if (constraintType.equals(Layout.box.name())) {
-					return new BoxLayoutConstraints(someConstraints);
 				}
 				else if (constraintType.equals(Layout.border.name())) {
-					return new BorderLayoutConstraints(someConstraints);
+					return factory.newInstance(BorderLayoutConstraints.class, someConstraints);
 				}
 				else if (constraintType.equals(Layout.twocols.name())) {
-					return new TwoColsLayoutConstraints(someConstraints);
+					return factory.newInstance(TwoColsLayoutConstraints.class, someConstraints);
 				}
 				else if (constraintType.equals(Layout.gridbag.name())) {
-					return new GridBagLayoutConstraints(someConstraints);
+					return factory.newInstance(GridBagLayoutConstraints.class, someConstraints);
 				}
 			}
 			catch (StringIndexOutOfBoundsException e) {
@@ -119,46 +120,11 @@ public interface ComponentConstraints extends AccessibleProxyObject, Map<String,
 
 	public String getStringRepresentation();
 
-	public ComponentConstraints()
-	{
-		super();
-	}
-
-	protected ComponentConstraints(String someConstraints)
-	{
-		this();
-		StringTokenizer st = new StringTokenizer(someConstraints,";");
-		while (st.hasMoreTokens()) {
-			String next = st.nextToken();
-			StringTokenizer st2 = new StringTokenizer(next,"=");
-			String key = null;
-			String value = null;
-			if (st2.hasMoreTokens()) {
-				key = st2.nextToken();
-			}
-			if (st2.hasMoreTokens()) {
-				value = st2.nextToken();
-			}
-			if (key != null && value != null) {
-				put(key,value);
-			}
-		}
-	}
-
-	ComponentConstraints(ComponentConstraints someConstraints)
-	{
-		this();
-		ignoreNotif = true;
-		putAll(someConstraints);
-		ignoreNotif = false;
-		component = someConstraints.component;
-	}
-
 	public Layout getType();
 
-	public <E extends Enum> E getEnumValue(String key, Class<E> enumType, E defaultValue);
+	public <E extends Enum<E>> E getEnumValue(String key, Class<E> enumType, E defaultValue);
 
-	public void setEnumValue(String key, Enum value);
+	public <E extends Enum<E>> void setEnumValue(String key, E value);
 
 	public int getIntValue(String key, int defaultValue);
 
@@ -176,8 +142,10 @@ public interface ComponentConstraints extends AccessibleProxyObject, Map<String,
 
 	public void setBooleanValue(String key, boolean value);
 
+	@Getter(id = COMPONENT, inverse = FIBComponent.CONSTRAINTS)
 	public FIBComponent getComponent();
 
+	@Setter(id = COMPONENT)
 	public void setComponent(FIBComponent component);
 
 	public abstract void performConstrainedAddition(JComponent container, JComponent contained);

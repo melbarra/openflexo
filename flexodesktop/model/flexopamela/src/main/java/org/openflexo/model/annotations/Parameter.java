@@ -6,11 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = ElementType.TYPE)
+@Target(value = ElementType.PARAMETER)
 public @interface Parameter {
 
-	public String name();
-
-	public Class<?> type();
+	public String value();
 
 }

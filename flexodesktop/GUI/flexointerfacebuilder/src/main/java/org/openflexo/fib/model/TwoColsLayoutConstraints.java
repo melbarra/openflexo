@@ -19,136 +19,30 @@
  */
 package org.openflexo.fib.model;
 
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.JComponent;
-
-import org.openflexo.fib.model.FIBPanel.Layout;
 
 
 
-public class TwoColsLayoutConstraints extends ComponentConstraints {
+public interface TwoColsLayoutConstraints extends ComponentConstraints {
 
-	private static final String LOCATION = "location";
-	private static final String EXPAND_VERTICALLY = "expandVertically";
-	private static final String EXPAND_HORIZONTALLY = "expandHorizontally";
-	
-	public TwoColsLayoutLocation getLocation() 
-	{
-		return getEnumValue(LOCATION,TwoColsLayoutLocation.class,TwoColsLayoutLocation.center);
-	}
+	public static final String LOCATION = "location";
+	public static final String EXPAND_VERTICALLY = "expandVertically";
+	public static final String EXPAND_HORIZONTALLY = "expandHorizontally";
 
-	public void setLocation(TwoColsLayoutLocation location) 
-	{
-		setEnumValue(LOCATION,location);
-	}
-
-	public boolean getExpandVertically()
-	{
-		return getBooleanValue(EXPAND_VERTICALLY,false);
-	}
-	
-	public void setExpandVertically(boolean flag)
-	{
-		setBooleanValue(EXPAND_VERTICALLY, flag);
-	}
-	
-	public boolean getExpandHorizontally()
-	{
-		return getBooleanValue(EXPAND_HORIZONTALLY,false);
-	}
-	
-	public void setExpandHorizontally(boolean flag)
-	{
-		setBooleanValue(EXPAND_HORIZONTALLY, flag);
-	}
-	
 	public static enum TwoColsLayoutLocation
 	{
-		left,
-		right,
-		center;
+		left, right, center;
 	}
 
-	public TwoColsLayoutConstraints() 
-	{
-		super();
-	}
-	
-	public TwoColsLayoutConstraints(
-			TwoColsLayoutLocation location, 
-			boolean expandHorizontally, 
-			boolean expandVertically,
-			int index) 
-	{
-		super();
-		setLocation(location);
-		setExpandHorizontally(expandHorizontally);
-		setExpandVertically(expandVertically);
-		setIndex(index);
-	}
-	
-	protected TwoColsLayoutConstraints(String someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	TwoColsLayoutConstraints(ComponentConstraints someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	@Override
-	protected Layout getType()
-	{
-		return Layout.twocols;
-	}
+	public TwoColsLayoutLocation getLocation();
 
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		GridBagConstraints c = new GridBagConstraints();
-		//c.insets = new Insets(3, 3, 3, 3);
-		c.insets = new Insets(0,2,0,2);
-		if (getLocation() == TwoColsLayoutLocation.left) {
-			c.fill = GridBagConstraints.NONE;
-			c.weightx = 0; //1.0;
-			c.gridwidth = GridBagConstraints.RELATIVE;
-			c.anchor = GridBagConstraints.NORTHEAST;				
-			if (getExpandVertically()) {
-				//c.weighty = 1.0;
-				c.fill = GridBagConstraints.VERTICAL;
-			}
-			else {
-				c.insets = new Insets(5,2,0,2);
-			}
-		}
-		else {
-			if (getExpandHorizontally()) {
-				c.fill = GridBagConstraints.BOTH;
-				c.anchor = GridBagConstraints.CENTER;
-				if (getExpandVertically()) {
-					c.weighty = 1.0;
-				}
-			} else {
-				c.fill = GridBagConstraints.NONE;
-				c.anchor = GridBagConstraints.WEST;
-			}
-			c.weightx = 1.0; //2.0;
-			c.gridwidth = GridBagConstraints.REMAINDER;
-		}	
+	public void setLocation(TwoColsLayoutLocation location);
 
-		container.add(contained,c);
-		
-		/*GridBagLayout gridbag = (GridBagLayout)getJComponent().getLayout();
-		GridBagConstraints gridBagConstraints = (GridBagConstraints)getConstraints().get(c);
-		gridbag.setConstraints(c,gridBagConstraints);
-		getJComponent().add(c);
+	public boolean getExpandVertically();
 
-		container.add(contained);*/
-	}
+	public void setExpandVertically(boolean flag);
 
+	public boolean getExpandHorizontally();
+
+	public void setExpandHorizontally(boolean flag);
 
 }

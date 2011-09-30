@@ -25,7 +25,7 @@ SetCompressor lzma
 !define MUI_LANGDLL_REGISTRY_KEY ${REGKEY}
 !define MUI_LANGDLL_REGISTRY_VALUENAME InstallerLanguage
 
-!define BUSINESS_VERSION "Business +"
+!define BUSINESS_VERSION "@productSuffix@"
 !define PRODUCT_NAME "$(^Name) ${BUSINESS_VERSION} ${VERSION}"
 !define EXE_FILE "${PRODUCT_NAME}.exe"
 Icon "@dist.dir@\Icons\Flexo\@wizard.setup.icon@"
@@ -40,6 +40,11 @@ ReserveFile "${NSISDIR}\Plugins\System.dll"
 
 # Variables
 Var StartMenuGroup
+
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "Launch ${PRODUCTNAME}"
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchApp"
+!insertmacro MUI_PAGE_FINISH
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
@@ -110,10 +115,11 @@ Section -post SEC0001
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    CreateShortCut "$DESKTOP\${EXE_FILE}.lnk" "$INSTDIR\${EXE_FILE}.exe" ""
-    SetOutPath $SMPROGRAMS\$StartMenuGroup
+    CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
+    CreateShortCut "$SMPROGRAMS\$StartMenuGroup\${PRODUCT_NAME}.lnk" "$INSTDIR\${EXE_FILE}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
+    CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${EXE_FILE}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
@@ -122,6 +128,7 @@ Section -post SEC0001
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" UninstallString $INSTDIR\uninstall.exe
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
+    
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -150,7 +157,10 @@ SectionEnd
 
 Section -un.post UNSEC0001
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
+    Delete "$SMPROGRAMS\$StartMenuGroup\${PRODUCT_NAME}.lnk"
+    Delete "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" 
+    Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
+    Delete "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
@@ -179,9 +189,13 @@ Function un.onInit
     !insertmacro SELECT_UNSECTION Main ${UNSEC0000}
 FunctionEnd
 
+Function LaunchApp
+  ExecShell "" "$DESKTOP\${PRODUCT_NAME}.lnk"
+FunctionEnd
+
 # Installer Language Strings
 # TODO Update the Language Strings with the appropriate translations.s
 
-LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_FRENCH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_DUTCH} "Uninstall $(^Name)"
+LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall ${PRODUCT_NAME}"
+LangString ^UninstallLink ${LANG_FRENCH} "Uninstall ${PRODUCT_NAME}"
+LangString ^UninstallLink ${LANG_DUTCH} "Uninstall ${PRODUCT_NAME}"

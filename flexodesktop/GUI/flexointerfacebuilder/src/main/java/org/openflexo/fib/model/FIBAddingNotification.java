@@ -26,22 +26,22 @@ public class FIBAddingNotification<T extends Object> extends FIBModelNotificatio
 	{
 		super(parameterKey.name(),null,addedValue);
 	}
-	
+
 
 	public FIBAddingNotification(String attributeName, T addedValue)
 	{
 		super(attributeName,null,addedValue);
 	}
-	
+
 	public T getAddedValue()
 	{
 		return newValue();
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return "FIBAddingNotification of "+getClass().getSimpleName()+" "+getAttributeName()+" new: "+newValue();
 	}
-	
+
 }

@@ -19,45 +19,19 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
-
 import org.openflexo.fib.model.FIBNumber.NumberType;
+import org.openflexo.model.annotations.ModelEntity;
 
-
-public class FIBNumberColumn extends FIBTableColumn {
+@ModelEntity
+public interface FIBNumberColumn extends FIBTableColumn {
 
 	public static enum Parameters implements FIBModelAttribute
 	{
 		numberType
 	}
 
-	private NumberType numberType = NumberType.IntegerType;
+	public NumberType getNumberType();
 
-	public NumberType getNumberType()
-	{
-		return numberType;
-	}
-
-	public void setNumberType(NumberType numberType)
-	{
-		FIBAttributeNotification<NumberType> notification = requireChange(
-				Parameters.numberType, numberType);
-		if (notification != null) {
-			this.numberType = numberType;
-			hasChanged(notification);
-		}
-	}
-
-	@Override
-	public Type getDefaultDataClass()
-	{
-		return Number.class;
-	}
-
-	@Override
-	public ColumnType getColumnType()
-	{
-		return ColumnType.Number;
-	}
+	public void setNumberType(NumberType numberType);
 
 }

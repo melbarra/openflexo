@@ -19,24 +19,25 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBTextArea extends FIBWidget {
+@ModelEntity
+public interface FIBTextArea extends FIBWidget {
 
-	//TODO: handle font
-    public boolean validateOnReturn = false;
-    public Integer columns = null;
-    public Integer rows = null;
-    public String text = null;
- 
-    public FIBTextArea() 
-    {
-	}
-    
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return String.class;
-	}
+	public boolean isValidateOnReturn();
+
+	public void setValidateOnReturn(boolean validateOnReturn);
+
+	public Integer getColumns();
+
+	public void setColumns(Integer columns);
+
+	public Integer getRows();
+
+	public void setRows(Integer rows);
+
+	public String getText();
+
+	public void setText(String text);
 
 }

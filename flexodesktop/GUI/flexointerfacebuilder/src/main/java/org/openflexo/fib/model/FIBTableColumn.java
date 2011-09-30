@@ -21,20 +21,15 @@ package org.openflexo.fib.model;
 
 import java.awt.Font;
 import java.lang.reflect.Type;
-import java.util.logging.Logger;
 
 import org.openflexo.antar.binding.Bindable;
 import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.antar.binding.BindingVariableImpl;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
+import org.openflexo.antar.binding.BindingModel;
+import org.openflexo.model.annotations.ModelEntity;
 
-
-public abstract class FIBTableColumn extends FIBModelObject {
-
-	private static final Logger logger = Logger.getLogger(FIBTableColumn.class.getPackage().getName());
-
-	private FIBTable table;
+@ModelEntity(isAbstract = true)
+public interface FIBTableColumn extends FIBModelObject {
 
 	public static enum Parameters implements FIBModelAttribute
 	{
@@ -59,253 +54,76 @@ public abstract class FIBTableColumn extends FIBModelObject {
 		Number,
 		TextField
 	}
-	
 
-	public static BindingDefinition DATA = new BindingDefinition("data", Object.class, BindingDefinitionType.GET, false);
-	public static BindingDefinition TOOLTIP = new BindingDefinition("tooltip", String.class, BindingDefinitionType.GET, false);
-	public static BindingDefinition FORMAT = new BindingDefinition("format", String.class, BindingDefinitionType.GET, false);
 
-	private DataBinding data;
-	private DataBinding format;
-	private DataBinding tooltip;
-	private String title;
-	private String tooltipText;
-	private int columnWidth = 100;
-	private boolean resizable = true;
-	private boolean displayTitle = true;
-	private Font font;
-	
-	private final FIBFormatter formatter;
-	
-	public FIBTableColumn()
-	{
-		formatter = new FIBFormatter();
-	}
-	
-    public FIBTable getTable() 
-    {
-		return table;
-	}
+	public static final BindingDefinition DATA = new BindingDefinition("data", Object.class, BindingDefinitionType.GET, false);
+	public static final BindingDefinition TOOLTIP = new BindingDefinition("tooltip", String.class, BindingDefinitionType.GET, false);
+	public static final BindingDefinition FORMAT = new BindingDefinition("format", String.class, BindingDefinitionType.GET, false);
 
-	public void setTable(FIBTable table)
-	{
-		this.table = table;
-	}
+	public FIBTable getTable();
+
+	public void setTable(FIBTable table);
 
 	@Override
-	public FIBComponent getRootComponent()
-	{
-		if (getTable() != null) return getTable().getRootComponent();
-		return null;
-	}
+	public FIBComponent getRootComponent();
 
-	public DataBinding getData() 
-	{
-		if (data == null) data = new DataBinding(this,Parameters.data,DATA);
-		return data;
-	}
+	public DataBinding getData();
 
-	public void setData(DataBinding data) 
-	{
-		data.setOwner(this);
-		data.setBindingAttribute(Parameters.data);
-		data.setBindingDefinition(DATA);
-		this.data = data;
-	}
-	
-	public void finalizeTableDeserialization() 
-	{
-		logger.fine("finalizeDeserialization() for FIBTableColumn "+title);
-		if (data != null) {
-			data.finalizeDeserialization();
-		}
-		if (tooltip != null) tooltip.finalizeDeserialization();
-	}
+	public void setData(DataBinding data);
+
+	public void finalizeTableDeserialization();
 
 	@Override
-	public BindingModel getBindingModel() 
-	{
-		if (getTable() != null) return getTable().getTableBindingModel();
-		return null;
-	}
-	
-	public Type getDataClass()
-	{
-		if (getData() != null && getData().getBinding() != null && getData().getBinding() != null) 
-			return getData().getBinding().getAccessedType();
-		return getDefaultDataClass();
-	}
-	
+	public BindingModel getBindingModel();
+
+	public Type getDataClass();
+
 	public abstract Type getDefaultDataClass();
 
-	public String getTitle()
-	{
-		return title;
-	}
+	public String getTitle();
 
-	public void setTitle(String title)
-	{
-		FIBAttributeNotification<String> notification = requireChange(
-				Parameters.title, title);
-		if (notification != null) {
-			this.title = title;
-			hasChanged(notification);
-		}
-	}
+	public void setTitle(String title);
 
-	public Integer getColumnWidth()
-	{
-		return columnWidth;
-	}
+	public Integer getColumnWidth();
 
-	public void setColumnWidth(Integer columnWidth)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.columnWidth, columnWidth);
-		if (notification != null) {
-			this.columnWidth = columnWidth;
-			hasChanged(notification);
-		}
-	}
+	public void setColumnWidth(Integer columnWidth);
 
-	public Boolean getResizable()
-	{
-		return resizable;
-	}
+	public Boolean getResizable();
 
-	public void setResizable(Boolean resizable)
-	{
-		FIBAttributeNotification<Boolean> notification = requireChange(
-				Parameters.resizable, resizable);
-		if (notification != null) {
-			this.resizable = resizable;
-			hasChanged(notification);
-		}
-	}
+	public void setResizable(Boolean resizable);
 
-	public Boolean getDisplayTitle()
-	{
-		return displayTitle;
-	}
+	public Boolean getDisplayTitle();
 
-	public void setDisplayTitle(Boolean displayTitle)
-	{
-		FIBAttributeNotification<Boolean> notification = requireChange(
-				Parameters.displayTitle, displayTitle);
-		if (notification != null) {
-			this.displayTitle = displayTitle;
-			hasChanged(notification);
-		}
-	}
+	public void setDisplayTitle(Boolean displayTitle);
 
-	public Font retrieveValidFont()
-	{
-		if (font == null && getTable() != null) return getTable().retrieveValidFont();
-		return getFont();	
-	}
-	
-	public Font getFont()
-	{
-		return font;
-	}
+	public Font retrieveValidFont();
 
-	public void setFont(Font font)
-	{
-		FIBAttributeNotification<Font> notification = requireChange(
-				Parameters.font, font);
-		if (notification != null) {
-			this.font = font;
-			hasChanged(notification);
-		}
-	}
+	public Font getFont();
+
+	public void setFont(Font font);
 
 	public abstract ColumnType getColumnType();
-	
-	public DataBinding getFormat() 
-	{
-		if (format == null) format = new DataBinding(formatter,Parameters.format,FORMAT);
-		return format;
-	}
 
-	public void setFormat(DataBinding format) 
-	{
-		format.setOwner(formatter);
-		format.setBindingAttribute(Parameters.format);
-		format.setBindingDefinition(FORMAT);
-		this.format = format;
-	}
-	
-	public FIBFormatter getFormatter()
-	{
-		return formatter;
-	}
-	
-	private class FIBFormatter extends FIBModelObject implements Bindable
-	{
-		private BindingModel formatterBindingModel = null;
-		
-		@Override
-		public BindingModel getBindingModel() 
-		{
-			if (formatterBindingModel == null) createFormatterBindingModel();
-			return formatterBindingModel;
-		}
+	public DataBinding getFormat();
 
-		private void createFormatterBindingModel()
-		{
-			formatterBindingModel = new BindingModel();
-			formatterBindingModel.addToBindingVariables(new BindingVariableImpl(this, "object", Object.class) {
-				@Override
-				public Type getType()
-				{
-					return getDataClass();
-				}
-			});
-		}
+	public void setFormat(DataBinding format);
 
-		@Override
-		public FIBComponent getRootComponent()
-		{
-			return FIBTableColumn.this.getRootComponent();
-		}
+	public FIBFormatter getFormatter();
+
+	@ModelEntity
+	public interface FIBFormatter extends FIBModelObject, Bindable
+	{
 
 	}
 
-	public int getIndex()
-	{
-		if (getTable() != null)
-			return getTable().getColumns().indexOf(this);
-		return -1;
-	}
+	public int getIndex();
 
-	public String getTooltipText()
-	{
-		return tooltipText;
-	}
+	public String getTooltipText();
 
-	public void setTooltipText(String tooltipText)
-	{
-		FIBAttributeNotification<String> notification = requireChange(
-				Parameters.tooltipText, tooltipText);
-		if (notification != null) {
-			this.tooltipText = tooltipText;
-			hasChanged(notification);
-		}
-	}
-	
-	public DataBinding getTooltip() 
-	{
-		if (tooltip == null) tooltip = new DataBinding(this,Parameters.tooltip,TOOLTIP);
-		return tooltip;
-	}
+	public void setTooltipText(String tooltipText);
 
-	public void setTooltip(DataBinding tooltip) 
-	{
-		tooltip.setOwner(this);
-		tooltip.setBindingAttribute(Parameters.tooltip);
-		tooltip.setBindingDefinition(TOOLTIP);
-		this.tooltip = tooltip;
-	}
-	
+	public DataBinding getTooltip();
+
+	public void setTooltip(DataBinding tooltip);
 
 }

@@ -19,54 +19,22 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
-
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBTextFieldColumn extends FIBTableColumn {
+@ModelEntity
+public interface FIBTextFieldColumn extends FIBTableColumn {
 
 	public static enum Parameters implements FIBModelAttribute
 	{
 		isEditable
 	}
 
-	public static BindingDefinition IS_EDITABLE = new BindingDefinition("isEditable", Boolean.class , BindingDefinitionType.GET, false);
+	public static final BindingDefinition IS_EDITABLE = new BindingDefinition("isEditable", Boolean.class, BindingDefinitionType.GET, false);
 
-	private DataBinding isEditable;
+	public DataBinding getIsEditable();
 
-	public DataBinding getIsEditable() 
-	{
-		if (isEditable == null) isEditable = new DataBinding(this,Parameters.isEditable,IS_EDITABLE);
-		return isEditable;
-	}
-
-	public void setIsEditable(DataBinding isEditable) 
-	{
-		isEditable.setOwner(this);
-		isEditable.setBindingAttribute(Parameters.isEditable);
-		isEditable.setBindingDefinition(IS_EDITABLE);
-		this.isEditable = isEditable;
-	}
-	
-	@Override
-	public void finalizeTableDeserialization() 
-	{
-		super.finalizeTableDeserialization();
-		if (isEditable != null) isEditable.finalizeDeserialization();
-	}
-
-	@Override
-	public Type getDefaultDataClass()
-	{
-		return String.class;
-	}
-
-	@Override
-	public ColumnType getColumnType()
-	{
-		return ColumnType.TextField;
-	}
-
+	public void setIsEditable(DataBinding isEditable);
 
 }

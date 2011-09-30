@@ -19,20 +19,9 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBLabelColumn extends FIBTableColumn {
-
-	@Override
-	public Type getDefaultDataClass()
-	{
-		return String.class;
-	}
-
-	@Override
-	public ColumnType getColumnType()
-	{
-		return ColumnType.Label;
-	}
+@ModelEntity
+public interface FIBLabelColumn extends FIBTableColumn {
 
 }

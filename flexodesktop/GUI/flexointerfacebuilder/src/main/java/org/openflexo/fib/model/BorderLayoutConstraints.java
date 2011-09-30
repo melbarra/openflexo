@@ -20,29 +20,11 @@
 package org.openflexo.fib.model;
 
 import java.awt.BorderLayout;
-import java.util.logging.Logger;
 
-import javax.swing.JComponent;
+import org.openflexo.model.annotations.ModelEntity;
 
-import org.openflexo.fib.model.FIBPanel.Layout;
-
-
-
+@ModelEntity
 public interface BorderLayoutConstraints extends ComponentConstraints {
-
-	private static final Logger logger = Logger.getLogger(FIBComponent.class.getPackage().getName());
-
-	private static final String LOCATION = "location";
-
-	public BorderLayoutLocation getLocation()
-	{
-		return getEnumValue(LOCATION,BorderLayoutLocation.class,BorderLayoutLocation.center);
-	}
-
-	public void setLocation(BorderLayoutLocation location)
-	{
-		setEnumValue(LOCATION,location);
-	}
 
 	public static enum BorderLayoutLocation
 	{
@@ -76,38 +58,8 @@ public interface BorderLayoutConstraints extends ComponentConstraints {
 															public abstract String getConstraint();
 	}
 
-	public BorderLayoutConstraints()
-	{
-		super();
-	}
+	public BorderLayoutLocation getLocation();
 
-	public BorderLayoutConstraints(BorderLayoutLocation location)
-	{
-		super();
-		setLocation(location);
-	}
-
-	protected BorderLayoutConstraints(String someConstraints)
-	{
-		super(someConstraints);
-	}
-
-	BorderLayoutConstraints(ComponentConstraints someConstraints)
-	{
-		super(someConstraints);
-	}
-
-	@Override
-	protected Layout getType()
-	{
-		return Layout.border;
-	}
-
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		container.add(contained,getLocation().getConstraint());
-	}
+	public void setLocation(BorderLayoutLocation location);
 
 }

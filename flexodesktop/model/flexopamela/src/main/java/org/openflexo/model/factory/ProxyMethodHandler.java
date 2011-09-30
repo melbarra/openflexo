@@ -37,6 +37,7 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 	private ModelEntity<I> modelEntity;
 
 	private I object;
+	private boolean notificationsEnabled = true;
 
 	private static Method PERFORM_SUPER_GETTER;
 	private static Method PERFORM_SUPER_SETTER;
@@ -44,6 +45,8 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 	private static Method PERFORM_SUPER_REMOVER;
 	private static Method PERFORM_SUPER_DELETER;
 	private static Method PERFORM_SUPER_FINDER;
+	private static Method ENABLE_NOTIFICATIONS;
+	private static Method DISABLE_NOTIFICATIONS;
 	private static Method CLONE_OBJECT;
 	private static Method CLONE_OBJECT_WITH_CONTEXT;
 
@@ -55,6 +58,8 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 			PERFORM_SUPER_REMOVER = AccessibleProxyObject.class.getMethod("performSuperRemover", String.class, Object.class);
 			PERFORM_SUPER_DELETER = AccessibleProxyObject.class.getMethod("performSuperDeleter");
 			PERFORM_SUPER_FINDER = AccessibleProxyObject.class.getMethod("performSuperFinder", Object.class);
+			ENABLE_NOTIFICATIONS = AccessibleProxyObject.class.getMethod("enableNotifications", Object.class);
+			DISABLE_NOTIFICATIONS = AccessibleProxyObject.class.getMethod("disableNotifications", Object.class);
 			CLONE_OBJECT = CloneableProxyObject.class.getMethod("cloneObject");
 			CLONE_OBJECT_WITH_CONTEXT = CloneableProxyObject.class.getMethod("cloneObject",Array.newInstance(Object.class,0).getClass());
 		} catch (SecurityException e) {
@@ -163,6 +168,13 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 			internallyInvokeDeleter();
 			return null;
 		} else if (method.equals(PERFORM_SUPER_FINDER)) {
+			internallyInvokeFinder(finder, args);
+			return null;
+		} else if (method.equals(ENABLE_NOTIFICATIONS)) {
+			notificationsEnabled = true;
+			return null;
+		} else if (method.equals(DISABLE_NOTIFICATIONS)) {
+			notificationsEnabled = false;
 			internallyInvokeFinder(finder, args);
 			return null;
 		}
@@ -464,7 +476,7 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 		Object oldValue = invokeGetter(property);
 
 		// Is it a real change ?
-		if (isEqual(oldValue, value)) {
+		if (!isEqual(oldValue, value)) {
 
 			// First handle inverse property for oldValue
 			if (property.getInverseProperty() != null) {
@@ -495,29 +507,40 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 			}
 
 			// Notify if needed
-			if (getObject() instanceof ObservableObject) {
-				((ObservableObject)getObject()).firePropertyChanged(property.getPropertyIdentifier(),oldValue,value);
+			if (notificationsEnabled) {
+				if (getObject() instanceof ObservableObject) {
+					((ObservableObject)getObject()).firePropertyChanged(property.getPropertyIdentifier(),oldValue,value);
+				}
 			}
 
 			// First handle inverse property for newValue
 			if (property.getInverseProperty() != null) {
-				switch (property.getInverseProperty().getCardinality()) {
-				case SINGLE:
-					if (value != null) {
-						getModelFactory().getHandler(value).invokeSetter(property.getInverseProperty(), getObject());
+				ProxyMethodHandler<Object> handler = getModelFactory().getHandler(value);
+				boolean notificationsHandledByHandler = handler.notificationsEnabled;
+				if (notificationsEnabled != notificationsHandledByHandler) {
+					handler.notificationsEnabled = false;
+				}
+				try {
+					switch (property.getInverseProperty().getCardinality()) {
+					case SINGLE:
+						if (value != null) {
+							handler.invokeSetter(property.getInverseProperty(), getObject());
+						}
+						break;
+					case LIST:
+						//System.out.println("Je viens de faire le setter pour "+property+" value="+value);
+						if (value != null) {
+							handler.invokeAdder(property.getInverseProperty(), getObject());
+							//System.out.println("J'ai execute: "+property.getInverseProperty().getAdderMethod()+" avec "+getObject());
+						}
+						break;
+					case MAP:
+						break;
+					default:
+						throw new ModelExecutionException("Invalid cardinality: "+property.getInverseProperty().getCardinality());
 					}
-					break;
-				case LIST:
-					//System.out.println("Je viens de faire le setter pour "+property+" value="+value);
-					if (value != null) {
-						getModelFactory().getHandler(value).invokeAdder(property.getInverseProperty(), getObject());
-						//System.out.println("J'ai execute: "+property.getInverseProperty().getAdderMethod()+" avec "+getObject());
-					}
-					break;
-				case MAP:
-					break;
-				default:
-					throw new ModelExecutionException("Invalid cardinality: "+property.getInverseProperty().getCardinality());
+				} finally {
+					handler.notificationsEnabled = notificationsHandledByHandler;
 				}
 			}
 		}
@@ -689,12 +712,12 @@ public class ProxyMethodHandler<I> implements MethodHandler {
 	private static boolean isEqual(Object oldValue, Object newValue)
 	{
 		if (oldValue == null) {
-			return newValue != null;
+			return newValue == null;
 		}
 		if (oldValue == newValue) {
-			return false;
+			return true;
 		}
-		return !oldValue.equals(newValue);
+		return oldValue.equals(newValue);
 	}
 
 	/*private Object cloneObject() throws ModelExecutionException, ModelDefinitionException, CloneNotSupportedException

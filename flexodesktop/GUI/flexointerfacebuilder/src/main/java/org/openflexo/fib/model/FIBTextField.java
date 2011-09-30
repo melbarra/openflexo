@@ -19,24 +19,25 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBTextField extends FIBWidget {
+@ModelEntity
+public interface FIBTextField extends FIBWidget {
 
-	//TODO: handle font
-    public boolean validateOnReturn = false;
-    public Integer columns;
-    public boolean passwd = false;
-    public String text = null;
- 
-    public FIBTextField()
-    {
-	}
-    
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return String.class;
-	}
+	public boolean isValidateOnReturn();
+
+	public void setValidateOnReturn(boolean validateOnReturn);
+
+	public Integer getColumns();
+
+	public void setColumns(Integer columns);
+
+	public boolean isPasswd();
+
+	public void setPasswd(boolean passwd);
+
+	public String getText();
+
+	public void setText(String text);
 
 }

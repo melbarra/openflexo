@@ -95,6 +95,7 @@ public class ResourceLocator {
 	}
 
 	public static void resetFlexoResourceLocation(File newLocation) {
+		System.err.println("Resetting flexo resource location to " + newLocation.getAbsolutePath());
 		preferredResourcePath = newLocation;
 		directoriesSearchOrder = null;
 	}
@@ -110,14 +111,12 @@ public class ResourceLocator {
 					logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());
 				}
 				directoriesSearchOrder.add(preferredResourcePath);
-			} else {
-				File flexoDesktopDirectory = findFlexoDesktopDirectory(new File(System.getProperty("user.dir")));
-				findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
-				/*
-				 * userHomeDirectory = new File(System.getProperty("user.home")); directoriesSearchOrder.add(userHomeDirectory);
-				 */
-
 			}
+			File flexoDesktopDirectory = findFlexoDesktopDirectory(new File(System.getProperty("user.dir")));
+			if (flexoDesktopDirectory != null) {
+				findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
+			}
+
 		}
 		return directoriesSearchOrder;
 	}

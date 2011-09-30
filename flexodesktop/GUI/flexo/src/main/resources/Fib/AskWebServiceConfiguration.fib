@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel layout="border" dataClassName="org.openflexo.view.controller.PPMWebServiceClientconfiguration">
+  <Panel layout="gridbag" constraints="border(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=-1;gridX=-1;index=0;gridWidth=1;insetsTop=0;location=center;insetsBottom=0;weightY=0.0;weightX=0.0;fill=none)">
+    <Label label="login" localize="true" constraints="gridbag(insetsLeft=5;insetsRight=5;gridHeight=1;padY=0;padX=0;anchor=center;gridY=0;gridX=0;index=0;gridWidth=1;insetsTop=5;insetsBottom=5;weightY=0.0;fill=none;weightX=0.0)">
+      <LocalizedDictionary />
+    </Label>
+    <TextField columns="7" passwd="false" text="TextField" localize="true" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=0;gridX=1;index=2;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;weightX=1.0;fill=horizontal)" />
+    <TextField columns="7" passwd="false" text="TextField" localize="true" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=1;gridX=1;index=1;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=horizontal;weightX=1.0)" />
+    <Label label="password" localize="true" constraints="gridbag(insetsLeft=5;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=1;gridX=0;index=3;gridWidth=1;insetsTop=5;insetsBottom=5;weightY=0.0;weightX=0.0;fill=none)">
+      <LocalizedDictionary />
+    </Label>
+    <Label label="server" localize="true" constraints="gridbag(insetsLeft=5;insetsRight=5;gridHeight=1;padY=0;padX=0;anchor=center;gridY=2;gridX=0;index=4;gridWidth=1;insetsTop=5;insetsBottom=5;weightY=0.0;weightX=0.0;fill=none)">
+      <LocalizedDictionary />
+    </Label>
+    <DropDown localize="true" name="dropdown" data="data.instance" constraints="gridbag(insetsLeft=0;insetsRight=0;gridHeight=1;padY=0;padX=0;anchor=center;gridY=2;gridX=1;index=5;gridWidth=1;insetsTop=0;insetsBottom=0;weightY=0.0;fill=horizontal;weightX=1.0)" iteratorClassName="org.openflexo.view.controller.PPMWebServiceClientconfiguration$ServerInstance" />
+    <LocalizedDictionary />
+  </Panel>
+  <LocalizedDictionary />
+</Panel>
+

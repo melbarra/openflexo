@@ -19,23 +19,12 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.Vector;
+import java.util.List;
 
-public class FIBTabPanel extends FIBContainer {
+import org.openflexo.model.annotations.ModelEntity;
 
-	@Override
-	public String getIdentifier()
-	{
-		return null;
-	}
-	
-	public Vector<FIBTab> getTabs() 
-	{
-		Vector<FIBTab> returned = new Vector<FIBTab>();
-		for (FIBComponent subComponent : getSubComponents()) {
-			if (subComponent instanceof FIBTab) returned.add((FIBTab)subComponent);
-		}
-		return returned;
-	}
-	
+@ModelEntity
+public interface FIBTabPanel extends FIBContainer {
+
+	public List<FIBTab> getTabs();
 }

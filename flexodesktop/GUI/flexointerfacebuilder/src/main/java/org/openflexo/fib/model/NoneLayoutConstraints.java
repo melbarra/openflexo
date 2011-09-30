@@ -19,65 +19,20 @@
  */
 package org.openflexo.fib.model;
 
-import javax.swing.JComponent;
-
-import org.openflexo.fib.model.FIBPanel.Layout;
 
 
 
-public class NoneLayoutConstraints extends ComponentConstraints {
+public interface NoneLayoutConstraints extends ComponentConstraints {
 
-	private static final String X = "x";
-	private static final String Y = "y";
-	
-	public int getX() 
-	{
-		return getIntValue(X,0);
-	}
+	public static final String X = "x";
+	public static final String Y = "y";
 
-	public void setX(int x) 
-	{
-		setIntValue(X,x);
-	}
+	public int getX();
 
-	public int getY() 
-	{
-		return getIntValue(Y,0);
-	}
+	public void setX(int x);
 
-	public void setY(int y) 
-	{
-		setIntValue(Y,y);
-	}
+	public int getY();
 
-	public NoneLayoutConstraints() 
-	{
-		super();
-	}
-	
-	protected NoneLayoutConstraints(String someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	NoneLayoutConstraints(ComponentConstraints someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	@Override
-	protected Layout getType()
-	{
-		return Layout.none;
-	}
-
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		contained.setLocation(getX(),getY());
-		container.add(contained);
-	}
-
+	public void setY(int y);
 
 }

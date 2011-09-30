@@ -21,40 +21,18 @@ package org.openflexo.fib.model.impl;
 
 import java.util.logging.Logger;
 
-import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.antar.binding.BindingModel;
 import org.openflexo.fib.model.DataBinding;
 import org.openflexo.fib.model.FIBBrowserAction;
+import org.openflexo.fib.model.FIBBrowserElement;
 import org.openflexo.fib.model.FIBComponent;
 
 
-public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
+public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl implements FIBBrowserAction {
 
 	private static final Logger logger = Logger.getLogger(FIBBrowserAction.class.getPackage().getName());
 
-	private FIBBrowserElement element;
-
-	public static enum Parameters implements FIBModelAttribute
-	{
-		method,
-		isAvailable
-	}
-
-	public static enum ActionType
-	{
-		Add,
-		Delete,
-		Custom
-	}
-
-	private DataBinding method;
-	private DataBinding isAvailable;
-
-	public static final BindingDefinition METHOD = new BindingDefinition("method", Object.class, BindingDefinitionType.EXECUTE, false);
-	public static final BindingDefinition IS_AVAILABLE = new BindingDefinition("isAvailable", Boolean.class, BindingDefinitionType.EXECUTE,
-			false);
-
+	@Override
 	public FIBBrowserElement getBrowserElement()
 	{
 		return element;
@@ -74,6 +52,7 @@ public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
 		return null;
 	}
 
+	@Override
 	public DataBinding getMethod()
 	{
 		if (method == null) {
@@ -82,6 +61,7 @@ public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
 		return method;
 	}
 
+	@Override
 	public void setMethod(DataBinding method)
 	{
 		method.setOwner(this);
@@ -90,6 +70,7 @@ public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
 		this.method = method;
 	}
 
+	@Override
 	public DataBinding getIsAvailable()
 	{
 		if (isAvailable == null) {
@@ -98,6 +79,7 @@ public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
 		return isAvailable;
 	}
 
+	@Override
 	public void setIsAvailable(DataBinding isAvailable)
 	{
 		isAvailable.setOwner(this);
@@ -125,6 +107,7 @@ public abstract class FIBBrowserActionImpl extends FIBModelObjectImpl {
 		}
 	}
 
+	@Override
 	public abstract ActionType getActionType();
 
 	public static class FIBAddAction extends FIBBrowserAction {

@@ -45,6 +45,9 @@ public class ModelEntity<I> extends ProxyFactory {
 	private ModelDeleter<I> deleter;
 	private boolean isAbstract;
 
+	private Class<? super I> superImplementedInterface;
+	private ModelEntity<? super I> superEntity;
+
 	protected ModelEntity(Class<I> implementedInterface, ModelFactory modelFactory) throws ModelDefinitionException {
 		// System.out.println("CREATED ModelEntity for "+implementedInterface.getSimpleName());
 
@@ -70,6 +73,14 @@ public class ModelEntity<I> extends ProxyFactory {
 		}
 		pastingPoints = implementedInterface.getAnnotation(PastingPoints.class);
 		this.isAbstract = entityAnnotation.isAbstract();
+		// We resolve here the model super interface
+		// The corresponding model entity MUST be resolved later
+		for (Class<?> i : implementedInterface.getInterfaces()) {
+			if (i.isAnnotationPresent(org.openflexo.model.annotations.ModelEntity.class)) {
+				superImplementedInterface = (Class<? super I>) i;
+				break;
+			}
+		}
 		setFilter(new MethodFilter() {
 			@Override
 			public boolean isHandled(Method method) {
@@ -88,7 +99,7 @@ public class ModelEntity<I> extends ProxyFactory {
 
 	protected void init() throws ModelDefinitionException {
 		setSuperclass(findValidSuperClass());
-		Class[] interfaces = { implementedInterface };
+		Class<?>[] interfaces = { implementedInterface };
 		setInterfaces(interfaces);
 		exploreEntity();
 		validateEntity();
@@ -114,7 +125,7 @@ public class ModelEntity<I> extends ProxyFactory {
 		if (implementationClass != null) {
 			return implementationClass.value();
 		} else {
-			if (implementedInterface.getInterfaces().length > 0) {
+			if (getSuperEntity() != null) {
 				return getSuperEntity().findValidSuperClass();
 			} else {
 				return modelFactory.getDefaultModelClass();
@@ -123,10 +134,14 @@ public class ModelEntity<I> extends ProxyFactory {
 	}
 
 	public ModelEntity<? super I> getSuperEntity() throws ModelDefinitionException {
-		if (implementedInterface.getInterfaces().length > 0) {
-			return (ModelEntity<? super I>) modelFactory.getModelEntity(implementedInterface.getInterfaces()[0]);
+		if (superEntity == null) {
+			if (superImplementedInterface != null) {
+				superEntity = modelFactory.getModelEntity(superImplementedInterface);
+			} else {
+				return null;
+			}
 		}
-		return null;
+		return superEntity;
 	}
 
 	public ModelProperty<I> getDeclaredModelProperty(String propertyIdentifier) throws ModelDefinitionException {
@@ -219,13 +234,13 @@ public class ModelEntity<I> extends ProxyFactory {
 				// System.out.println("Found constructor: "+constructor);
 				int i = 0;
 				for (Parameter p : constructor.value()) {
-					ModelProperty property = getModelProperty(p.name());
+					ModelProperty<? super I> property = getModelProperty(p.name());
 					handler.invokeSetter(property, args[i++]);
 				}
 			} else {
 				StringBuilder sb = new StringBuilder();
 				boolean isFirst = true;
-				for (Class c : types) {
+				for (Class<?> c : types) {
 					sb.append(isFirst ? "" : ",").append(c.getSimpleName());
 					isFirst = false;
 				}

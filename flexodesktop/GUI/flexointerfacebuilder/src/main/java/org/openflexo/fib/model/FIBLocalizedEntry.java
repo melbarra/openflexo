@@ -21,80 +21,30 @@ package org.openflexo.fib.model;
 
 import javax.swing.ImageIcon;
 
-import org.openflexo.fib.utils.FIBIconLibrary;
+import org.openflexo.model.annotations.ModelEntity;
 
 
+@ModelEntity
+public interface FIBLocalizedEntry extends FIBModelObject {
 
-public class FIBLocalizedEntry extends FIBModelObject {
+	public FIBLocalizedDictionary getLocalizedDictionary();
 
-	private FIBLocalizedDictionary _dictionary;
-	
-	private String key;
-	private String language;
-	private String value;
-	
-	public FIBLocalizedEntry()
-	{
-	}
-	
-	public FIBLocalizedEntry(FIBLocalizedDictionary dictionary, String key,
-			String language, String value)
-	{
-		super();
-		_dictionary = dictionary;
-		this.key = key;
-		this.language = language;
-		this.value = value;
-	}
+	public void setLocalizedDictionary(FIBLocalizedDictionary dict);
 
-	public void setLocalizedDictionary(FIBLocalizedDictionary dict) 
-	{
-		_dictionary = dict;
-	}
+	public String getKey();
 
-	public FIBLocalizedDictionary getLocalizedDictionary() 
-	{
-		return _dictionary;
-	}
-	
-	public String getKey() {
-		return key;
-	}
+	public void setKey(String key);
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+	public String getLanguage();
 
-	public String getLanguage() {
-		return language;
-	}
+	public void setLanguage(String language);
 
-	public void setLanguage(String language) {
-		this.language = language;
-	}
+	public String getValue();
 
-	public String getValue() {
-		return value;
-	}
+	public void setValue(String value);
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+	public String getInspectorName();
 
-	public String getInspectorName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public ImageIcon getIcon()
-	{
-		return FIBIconLibrary.LOCALIZATION_ICON;
-	}
-
-	@Override
-	public FIBComponent getRootComponent()
-	{
-		return getLocalizedDictionary().getRootComponent();
-	}
+	public ImageIcon getIcon();
 
 }

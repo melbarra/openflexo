@@ -19,13 +19,13 @@
  */
 package org.openflexo.fib.model;
 
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBDropDown extends FIBMultipleValues {
- 
-	public boolean showReset = false;
-	
-    public FIBDropDown()
-    {
-	}
-    
+@ModelEntity
+public interface FIBDropDown extends FIBMultipleValues {
+
+	public boolean getShowReset();
+
+	public void setShowReset(boolean showReset);
+
 }

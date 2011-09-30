@@ -19,14 +19,11 @@
  */
 package org.openflexo.fib.model;
 
-import java.awt.Image;
 import java.io.File;
-import java.lang.reflect.Type;
 
-import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-public class FIBImage extends FIBWidget {
+public interface FIBImage extends FIBWidget {
 
 	public static enum Parameters implements FIBModelAttribute
 	{
@@ -40,14 +37,14 @@ public class FIBImage extends FIBWidget {
 	public static enum Align
 	{
 		left { @Override
-		public int getAlign() { return SwingConstants.LEFT; }},
-		right { @Override
-		public int getAlign() { return SwingConstants.RIGHT; }},
-		center { @Override
-		public int getAlign() { return SwingConstants.CENTER; }};
-		public abstract int getAlign();
+			public int getAlign() { return SwingConstants.LEFT; }},
+			right { @Override
+				public int getAlign() { return SwingConstants.RIGHT; }},
+				center { @Override
+					public int getAlign() { return SwingConstants.CENTER; }};
+					public abstract int getAlign();
 	}
-	
+
 	public static enum SizeAdjustment
 	{
 		OriginalSize,
@@ -57,97 +54,25 @@ public class FIBImage extends FIBWidget {
 		AdjustHeight,
 		AdjustDimensions
 	}
-	
-	private File imageFile;
-	private Align align = Align.left;
-	private Integer imageWidth;
-	private Integer imageHeight;
-	private SizeAdjustment sizeAdjustment = SizeAdjustment.OriginalSize;
-	
-	public FIBImage() 
-	{
-		super();
-	}
-	
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return Image.class;
-	}
 
-	public Align getAlign()
-	{
-		return align;
-	}
+	public Align getAlign();
 
-	public void setAlign(Align align)
-	{
-		FIBAttributeNotification<Align> notification = requireChange(
-				Parameters.align, align);
-		if (notification != null) {
-			this.align = align;
-			hasChanged(notification);
-		}
-	}
+	public void setAlign(Align align);
 
-	public File getImageFile()
-	{
-		return imageFile;
-	}
+	public File getImageFile();
 
-	public void setImageFile(File imageFile)
-	{
-		FIBAttributeNotification<File> notification = requireChange(
-				Parameters.imageFile, imageFile);
-		if (notification != null) {
-			this.imageFile = imageFile;
-			hasChanged(notification);
-		}
-	}
+	public void setImageFile(File imageFile);
 
-	public SizeAdjustment getSizeAdjustment()
-	{
-		return sizeAdjustment;
-	}
+	public SizeAdjustment getSizeAdjustment();
 
-	public void setSizeAdjustment(SizeAdjustment sizeAdjustment)
-	{
-		FIBAttributeNotification<SizeAdjustment> notification = requireChange(
-				Parameters.sizeAdjustment, sizeAdjustment);
-		if (notification != null) {
-			this.sizeAdjustment = sizeAdjustment;
-			hasChanged(notification);
-		}
-	}
+	public void setSizeAdjustment(SizeAdjustment sizeAdjustment);
 
-	public Integer getImageWidth()
-	{
-		return imageWidth;
-	}
+	public Integer getImageWidth();
 
-	public void setImageWidth(Integer imageWidth)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.imageWidth, imageWidth);
-		if (notification != null) {
-			this.imageWidth = imageWidth;
-			hasChanged(notification);
-		}
-	}
+	public void setImageWidth(Integer imageWidth);
 
-	public Integer getImageHeight()
-	{
-		return imageHeight;
-	}
+	public Integer getImageHeight();
 
-	public void setImageHeight(Integer imageHeight)
-	{
-		FIBAttributeNotification<Integer> notification = requireChange(
-				Parameters.imageHeight, imageHeight);
-		if (notification != null) {
-			this.imageHeight = imageHeight;
-			hasChanged(notification);
-		}
-	}
+	public void setImageHeight(Integer imageHeight);
 
 }

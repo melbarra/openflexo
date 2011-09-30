@@ -74,6 +74,14 @@ public interface DataBinding extends AccessibleProxyObject
 			return value.toString();
 		};
 	}
+	
+	public static class DataBindingConstructors {
+		
+		public  DataBinding newDataBinding(FIBModelObject owner, FIBModelAttribute attribute, BindingDefinition definition) {
+			
+		}
+		
+	}
 
 	public Object execute(BindingEvaluationContext context);
 

@@ -19,18 +19,9 @@
  */
 package org.openflexo.fib.model;
 
-import java.awt.Color;
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBColor extends FIBWidget {
+@ModelEntity
+public interface FIBColor extends FIBWidget {
 
-	public FIBColor() 
-	{
-	}
-	
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return Color.class;
-	}
 }

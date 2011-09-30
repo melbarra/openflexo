@@ -19,18 +19,16 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.logging.Logger;
-
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.antar.binding.BindingModel;
+import org.openflexo.model.annotations.Getter;
+import org.openflexo.model.annotations.ModelEntity;
 
+@ModelEntity(isAbstract = true)
+public interface FIBBrowserAction extends FIBModelObject {
 
-public abstract class FIBBrowserAction extends FIBModelObject {
-
-	private static final Logger logger = Logger.getLogger(FIBBrowserAction.class.getPackage().getName());
-
-	private FIBBrowserElement element;
+	public static final String BROWSER_ELEMENT = "browserElement";
 
 	public static enum Parameters implements FIBModelAttribute
 	{
@@ -45,112 +43,43 @@ public abstract class FIBBrowserAction extends FIBModelObject {
 		Custom
 	}
 
-	private DataBinding method;
-	private DataBinding isAvailable;
-
 	public static final BindingDefinition METHOD = new BindingDefinition("method", Object.class, BindingDefinitionType.EXECUTE, false);
 	public static final BindingDefinition IS_AVAILABLE = new BindingDefinition("isAvailable", Boolean.class, BindingDefinitionType.EXECUTE,
 			false);
 
-	public FIBBrowserElement getBrowserElement()
-	{
-		return element;
-	}
+	@Getter(id = BROWSER_ELEMENT, inverse=FIBBrowserElement.)
+	public FIBBrowserElement getBrowserElement();
 
-	public void setBrowserElement(FIBBrowserElement element)
-	{
-		this.element = element;
-	}
+	public void setBrowserElement(FIBBrowserElement element);
 
-	@Override
-	public FIBComponent getRootComponent()
-	{
-		if (getBrowserElement() != null) {
-			return getBrowserElement().getRootComponent();
-		}
-		return null;
-	}
 
-	public DataBinding getMethod()
-	{
-		if (method == null) {
-			method = new DataBinding(this,Parameters.method,METHOD);
-		}
-		return method;
-	}
 
-	public void setMethod(DataBinding method)
-	{
-		method.setOwner(this);
-		method.setBindingAttribute(Parameters.method);
-		method.setBindingDefinition(METHOD);
-		this.method = method;
-	}
+	public DataBinding getMethod();
 
-	public DataBinding getIsAvailable()
-	{
-		if (isAvailable == null) {
-			isAvailable = new DataBinding(this,Parameters.isAvailable,IS_AVAILABLE);
-		}
-		return isAvailable;
-	}
+	public void setMethod(DataBinding method);
 
-	public void setIsAvailable(DataBinding isAvailable)
-	{
-		isAvailable.setOwner(this);
-		isAvailable.setBindingAttribute(Parameters.isAvailable);
-		isAvailable.setBindingDefinition(IS_AVAILABLE);
-		this.isAvailable = isAvailable;
-	}
+	public DataBinding getIsAvailable();
+
+	public void setIsAvailable(DataBinding isAvailable);
 
 	@Override
-	public BindingModel getBindingModel()
-	{
-		if (getBrowserElement() != null) {
-			return getBrowserElement().getActionBindingModel();
-		}
-		return null;
-	}
-
-	@Override
-	public void finalizeDeserialization()
-	{
-		logger.fine("finalizeDeserialization() for FIBTableAction "+getName());
-		super.finalizeDeserialization();
-		if (method != null) {
-			method.finalizeDeserialization();
-		}
-	}
+	public BindingModel getBindingModel();
 
 	public abstract ActionType getActionType();
 
-	public static class FIBAddAction extends FIBBrowserAction {
+	@ModelEntity
+	public static interface FIBAddAction extends FIBBrowserAction {
 
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Add;
-		}
 	}
 
-	public static class FIBRemoveAction extends FIBBrowserAction {
+	@ModelEntity
+	public static interface FIBRemoveAction extends FIBBrowserAction {
 
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Delete;
-		}
 	}
 
-	public static class FIBCustomAction extends FIBBrowserAction {
+	@ModelEntity
+	public static interface FIBCustomAction extends FIBBrowserAction {
 
-		public boolean isStatic = false;
-
-		@Override
-		public ActionType getActionType()
-		{
-			return ActionType.Custom;
-		}
 	}
 
 

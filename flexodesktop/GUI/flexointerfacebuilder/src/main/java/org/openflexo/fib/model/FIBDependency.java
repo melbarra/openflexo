@@ -19,21 +19,13 @@
  */
 package org.openflexo.fib.model;
 
-import java.util.logging.Logger;
-
-import org.openflexo.fib.model.FIBComponent.DependancyLoopException;
+import org.openflexo.model.annotations.ModelEntity;
 
 
-
+@ModelEntity
 public interface FIBDependency extends FIBModelObject {
 
 	public static final String OWNER = "owner";
-
-	// Owner depends of masterComponent
-
-	private FIBComponent owner;
-	private FIBComponent masterComponent;
-	private String masterComponentName;
 
 	public static enum Parameters implements FIBModelAttribute
 	{
@@ -41,67 +33,16 @@ public interface FIBDependency extends FIBModelObject {
 		masterComponent;
 	}
 
-	@Override
-	public FIBComponent getRootComponent()
-	{
-		return owner.getRootComponent();
-	}
+	public FIBComponent getOwner();
 
-	public FIBComponent getOwner()
-	{
-		return owner;
-	}
+	public void setOwner(FIBComponent owner);
 
-	public void setOwner(FIBComponent owner)
-	{
-		FIBAttributeNotification<FIBComponent> notification = requireChange(
-				Parameters.owner, owner);
-		if (notification != null) {
-			this.owner = owner;
-			hasChanged(notification);
-		}
-	}
+	public FIBComponent getMasterComponent();
 
-	public FIBComponent getMasterComponent()
-	{
-		return masterComponent;
-	}
+	public void setMasterComponent(FIBComponent masterComponent);
 
-	public void setMasterComponent(FIBComponent masterComponent)
-	{
-		FIBAttributeNotification<FIBComponent> notification = requireChange(
-				Parameters.masterComponent, masterComponent);
-		if (notification != null) {
-			this.masterComponent = masterComponent;
-			try {
-				getOwner().declareDependantOf(masterComponent);
-			} catch (DependancyLoopException e) {
-				logger.warning("DependancyLoopException raised while applying explicit dependancy for "+getOwner()+" and "+getMasterComponent()+" message: "+e.getMessage());
-			}
-			hasChanged(notification);
-		}
-	}
+	public String getMasterComponentName();
 
-	public FIBDependancy()
-	{
-		super();
-	}
+	public void setMasterComponentName(String masterComponentName);
 
-	public String getMasterComponentName()
-	{
-		if (getMasterComponent() != null) return getMasterComponent().getName();
-		return masterComponentName;
-	}
-
-	public void setMasterComponentName(String masterComponentName)
-	{
-		this.masterComponentName = masterComponentName;
-	}
-
-	@Override
-	public void finalizeDeserialization()
-	{
-		super.finalizeDeserialization();
-		setMasterComponent(getRootComponent().getComponentNamed(masterComponentName));
-	}
 }

@@ -19,20 +19,12 @@
  */
 package org.openflexo.fib.model;
 
-import java.awt.Font;
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBFont extends FIBWidget {
+@ModelEntity
+public interface FIBFont extends FIBWidget {
 
-	public String sampleText = "Sample for this font";
-	
-	public FIBFont() 
-	{
-	}
-	
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return Font.class;
-	}
+	public String getSampleText();
+
+	public void setSampleText(String sampleText);
 }

@@ -19,15 +19,14 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
-
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
+import org.openflexo.model.annotations.ModelEntity;
 
+@ModelEntity
+public interface FIBButton extends FIBWidget {
 
-public class FIBButton extends FIBWidget {
-
-	public static BindingDefinition ACTION = new BindingDefinition("action", Void.class, BindingDefinitionType.EXECUTE, false);
+	public static final BindingDefinition ACTION = new BindingDefinition("action", Void.class, BindingDefinitionType.EXECUTE, false);
 
 	public static enum ButtonType
 	{
@@ -42,68 +41,16 @@ public class FIBButton extends FIBWidget {
 		label
 	}
 
-	private DataBinding action;
-	private ButtonType buttonType = ButtonType.Trigger;
-	private String label;
-	
- 	public FIBButton() 
-	{
-	}
-	
-	@Override
-	public String getIdentifier()
-	{
-		return getLabel();
-	}
+	public DataBinding getAction();
 
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return String.class;
-	}
-	
-	public DataBinding getAction() 
-	{
-		if (action == null) action = new DataBinding(this,Parameters.action,ACTION);
-		return action;
-	}
+	public void setAction(DataBinding action);
 
-	public void setAction(DataBinding action) 
-	{
-		action.setOwner(this);
-		action.setBindingAttribute(Parameters.action);
-		action.setBindingDefinition(ACTION);
-		this.action = action;
-	}
+	public ButtonType getButtonType();
 
-	public ButtonType getButtonType()
-	{
-		return buttonType;
-	}
+	public void setButtonType(ButtonType buttonType);
 
-	public void setButtonType(ButtonType buttonType)
-	{
-		FIBAttributeNotification<ButtonType> notification = requireChange(
-				Parameters.buttonType, buttonType);
-		if (notification != null) {
-			this.buttonType = buttonType;
-			hasChanged(notification);
-		}
-	}
+	public String getLabel();
 
-	public String getLabel()
-	{
-		return label;
-	}
-
-	public void setLabel(String label)
-	{
-		FIBAttributeNotification<String> notification = requireChange(
-				Parameters.label, label);
-		if (notification != null) {
-			this.label = label;
-			hasChanged(notification);
-		}
-	}
+	public void setLabel(String label);
 
 }

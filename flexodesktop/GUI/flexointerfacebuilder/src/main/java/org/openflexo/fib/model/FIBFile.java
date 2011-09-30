@@ -20,35 +20,45 @@
 package org.openflexo.fib.model;
 
 import java.io.File;
-import java.lang.reflect.Type;
 
 import javax.swing.JFileChooser;
 
-public class FIBFile extends FIBWidget {
+import org.openflexo.model.annotations.ModelEntity;
+
+@ModelEntity
+public interface FIBFile extends FIBWidget {
 
 	public static enum  FileMode
 	{
 		OpenMode { @Override
-		public int getMode() { return JFileChooser.OPEN_DIALOG; } },
-		SaveMode { @Override
-		public int getMode() { return JFileChooser.SAVE_DIALOG; } };
-		public abstract int getMode();
+			public int getMode() { return JFileChooser.OPEN_DIALOG; } },
+			SaveMode { @Override
+				public int getMode() { return JFileChooser.SAVE_DIALOG; } };
+				public abstract int getMode();
 	}
-	
-	public FileMode mode;
-	public String filter;
-	public String title;
-	public boolean isDirectory = false;
-	public File defaultDirectory;
-	public Integer columns;
-	
- 	public FIBFile() 
-	{
-	}
-	
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return File.class;
-	}
+
+	public FileMode getMode();
+
+	public void setMode(FileMode mode);
+
+	public String getFilter();
+
+	public void setFilter(String filter);
+
+	public String getTitle();
+
+	public void setTitle(String title);
+
+	public boolean isDirectory();
+
+	public void setDirectory(boolean isDirectory);
+
+	public File getDefaultDirectory();
+
+	public void setDefaultDirectory(File defaultDirectory);
+
+	public Integer getColumns();
+
+	public void setColumns(Integer columns);
+
 }

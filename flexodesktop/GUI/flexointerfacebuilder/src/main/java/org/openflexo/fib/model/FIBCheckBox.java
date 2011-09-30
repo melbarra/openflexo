@@ -19,56 +19,22 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBCheckBox extends FIBWidget {
+@ModelEntity
+public interface FIBCheckBox extends FIBWidget {
 
-	private boolean negate = false;
-	private boolean selected = false;
-	
 	public static enum Parameters implements FIBModelAttribute
 	{
 		negate,
 		selected
 	}
-	
-	public FIBCheckBox() 
-	{
-	}
-	
-	@Override
-	public Type getDefaultDataClass() 
-	{
-		return Boolean.class;
-	}
 
-	public boolean getNegate() 
-	{
-		return negate;
-	}
+	public boolean getNegate();
 
-	public void setNegate(boolean negate) 
-	{
-		FIBAttributeNotification<Boolean> notification = requireChange(
-				Parameters.negate, negate);
-		if (notification != null) {
-			this.negate = negate;
-			hasChanged(notification);
-		}
-	}
+	public void setNegate(boolean negate);
 
-	public boolean getSelected() 
-	{
-		return selected;
-	}
+	public boolean getSelected();
 
-	public void setSelected(boolean selected)
-	{
-		FIBAttributeNotification<Boolean> notification = requireChange(
-				Parameters.selected, selected);
-		if (notification != null) {
-			this.selected = selected;
-			hasChanged(notification);
-		}
-	}
+	public void setSelected(boolean selected);
 }

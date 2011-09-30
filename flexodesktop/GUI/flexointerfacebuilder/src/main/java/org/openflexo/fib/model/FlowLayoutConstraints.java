@@ -19,47 +19,10 @@
  */
 package org.openflexo.fib.model;
 
-import javax.swing.JComponent;
-
-import org.openflexo.fib.model.FIBPanel.Layout;
+import org.openflexo.model.annotations.ModelEntity;
 
 
-
-public class FlowLayoutConstraints extends ComponentConstraints {
-
-	public FlowLayoutConstraints() 
-	{
-		super();
-	}
-	
-	public FlowLayoutConstraints(int index) 
-	{
-		super();
-		setIndex(index);
-	}
-	
-	protected FlowLayoutConstraints(String someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	FlowLayoutConstraints(ComponentConstraints someConstraints) 
-	{
-		super(someConstraints);
-	}
-	
-	@Override
-	protected Layout getType()
-	{
-		return Layout.flow;
-	}
-
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		container.add(contained);
-	}
-
+@ModelEntity
+public interface FlowLayoutConstraints extends ComponentConstraints {
 
 }

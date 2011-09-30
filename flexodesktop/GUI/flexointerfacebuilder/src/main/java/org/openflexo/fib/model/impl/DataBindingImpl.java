@@ -25,78 +25,34 @@ import java.util.logging.Logger;
 
 import org.openflexo.antar.binding.AbstractBinding;
 import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
-import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingFactory;
 import org.openflexo.antar.expr.Expression;
 import org.openflexo.antar.expr.Function;
 import org.openflexo.antar.expr.TypeMismatchException;
 import org.openflexo.antar.expr.Variable;
 import org.openflexo.antar.expr.parser.ParseException;
+import org.openflexo.fib.model.DataBinding;
+import org.openflexo.fib.model.FIBAttributeNotification;
+import org.openflexo.fib.model.FIBComponent;
 import org.openflexo.fib.model.FIBComponent.DependancyLoopException;
-import org.openflexo.fib.model.FIBModelObject.FIBModelAttribute;
-import org.openflexo.model.annotations.StringConverter;
+import org.openflexo.fib.model.FIBModelObject;
+import org.openflexo.fib.model.FIBWidget;
 import org.openflexo.model.factory.AccessibleProxyObject;
 import org.openflexo.toolbox.StringUtils;
-import org.openflexo.xmlcode.StringConvertable;
-import org.openflexo.xmlcode.StringEncoder.Converter;
 
 
-public interface DataBindingImpl implements AccessibleProxyObject, StringConvertable<DataBinding>
+public abstract class DataBindingImpl implements DataBinding, AccessibleProxyObject
 {
 
 	private static final Logger logger = Logger.getLogger(FIBComponent.class.getPackage().getName());
 
-	@StringConverter
-	public static final DataBinding.DataBindingConverter CONVERTER = new DataBindingConverter();
-
-	public static class DataBindingConverter extends Converter<DataBinding>
-	{
-		public DataBindingConverter()
-		{
-			super(DataBinding.class);
-		}
-
-		@Override
-		public DataBinding convertFromString(String value)
-		{
-			return new DataBinding(value);
-		}
-
-		@Override
-		public String convertToString(DataBinding value)
-		{
-			return value.toString();
-		};
-	}
-
 	@Override
-	public Converter<? extends DataBinding> getConverter() {
-		return CONVERTER;
-	}
-
-	private FIBModelObject owner;
-	private FIBModelAttribute bindingAttribute;
-	private String unparsedBinding;
-	private BindingDefinition bindingDefinition;
-	private AbstractBinding binding;
-
-	public DataBindingImpl(FIBModelObject owner, FIBModelAttribute attribute, BindingDefinition df)
-	{
-		setOwner(owner);
-		setBindingAttribute(attribute);
-		setBindingDefinition(df);
-	}
-
-	public DataBindingImpl(String unparsed)
-	{
-		unparsedBinding = unparsed;
-	}
-
 	public Object execute(BindingEvaluationContext context)
 	{
 		return getBindingValue(context);
 	}
 
+	@Override
 	public Object getBindingValue(BindingEvaluationContext context)
 	{
 		//logger.info("getBindingValue() "+this);
@@ -106,6 +62,7 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 		return null;
 	}
 
+	@Override
 	public void setBindingValue(Object value, BindingEvaluationContext context)
 	{
 		if (getBinding() != null && getBinding().isSettable()) {
@@ -116,36 +73,27 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 	@Override
 	public String toString()
 	{
-		if (binding != null) {
-			return binding.getStringRepresentation();
+		if (getBinding() != null) {
+			return getBinding().getStringRepresentation();
 		}
-		return unparsedBinding;
+		return getUnparsedBinding();
 	}
 
-	public BindingDefinition getBindingDefinition()
-	{
-		return bindingDefinition;
-	}
-
-	public void setBindingDefinition(BindingDefinition bindingDefinition)
-	{
-		this.bindingDefinition = bindingDefinition;
-	}
-
-	public AbstractBinding getBinding()
-	{
-		if (binding == null) {
+	@Override
+	public AbstractBinding getBinding() {
+		if (performSuperGetter(BINDING) == null) {
 			finalizeDeserialization();
 		}
-		return binding;
+		return (AbstractBinding) performSuperGetter(BINDING);
 	}
 
+	@Override
 	public AbstractBinding getBinding(boolean silentMode)
 	{
-		if (binding == null) {
+		if (performSuperGetter(BINDING) == null) {
 			finalizeDeserialization(silentMode);
 		}
-		return binding;
+		return (AbstractBinding) performSuperGetter(BINDING);
 	}
 
 	/*public void setBinding(AbstractBinding binding)
@@ -153,6 +101,7 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 		this.binding = binding;
 	}*/
 
+	@Override
 	public void setBinding(AbstractBinding value)
 	{
 		AbstractBinding oldValue = this.binding;
@@ -166,7 +115,7 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 				if (bindingAttribute != null) {
 					owner.notify(new FIBAttributeNotification<AbstractBinding>(bindingAttribute,oldValue,value));
 				}
-				owner.notifyBindingChanged(this);
+				getOwner().notifyBindingChanged(this);
 				return;
 			}
 		}
@@ -187,50 +136,59 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 		}
 	}
 
+	@Override
 	public boolean hasBinding()
 	{
 		return binding != null;
 	}
 
+	@Override
 	public boolean isValid()
 	{
 		return getBinding() != null && getBinding().isBindingValid();
 	}
 
-	public boolean isValid(boolean silentMode)
-	{
+	@Override
+	public boolean isValid(boolean silentMode) {
 		return getBinding(silentMode) != null && getBinding(silentMode).isBindingValid();
 	}
 
+	@Override
 	public boolean isSet()
 	{
 		return unparsedBinding != null || binding != null;
 	}
 
+	@Override
 	public boolean isUnset()
 	{
 		return unparsedBinding == null && binding == null;
 	}
 
+	@Override
 	public String getUnparsedBinding() {
 		return unparsedBinding;
 	}
 
+	@Override
 	public void setUnparsedBinding(String unparsedBinding) {
 		this.unparsedBinding = unparsedBinding;
 		binding = null;
 	}
 
+	@Override
 	public FIBModelObject getOwner() {
 		return owner;
 	}
 
+	@Override
 	public void setOwner(FIBModelObject owner)
 	{
 		this.owner = owner;
 	}
 
-	protected void finalizeDeserialization(boolean silentMode)
+	@Override
+	public void finalizeDeserialization(boolean silentMode)
 	{
 		if (getUnparsedBinding() == null) {
 			return;
@@ -242,19 +200,20 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 			System.out.println("BindingModel: "+getOwner().getBindingModel());
 		}*/
 
-		//System.out.println("BindingModel: "+getOwner().getBindingModel());
+		// System.out.println("BindingModel: "+getOwner().getBindingModel());
 		if (getOwner() != null) {
 			BindingFactory factory = getOwner().getBindingFactory();
 			factory.setBindable(getOwner());
 			binding = factory.convertFromString(getUnparsedBinding());
 			binding.setBindingDefinition(getBindingDefinition());
-			//System.out.println(">>>>>>>>>>>>>> Binding: "+binding.getStringRepresentation()+" owner="+binding.getOwner());
-			//System.out.println("binding.isBindingValid()="+binding.isBindingValid());
+			// System.out.println(">>>>>>>>>>>>>> Binding: "+binding.getStringRepresentation()+" owner="+binding.getOwner());
+			// System.out.println("binding.isBindingValid()="+binding.isBindingValid());
 		}
 
 		if (!binding.isBindingValid()) {
 			if (!silentMode) {
-				logger.warning("Binding not valid: "+binding+" for owner "+getOwner()+" context="+(getOwner()!=null?getOwner().getRootComponent():null));
+				logger.warning("Binding not valid: " + binding + " for owner " + getOwner() + " context="
+						+ (getOwner() != null ? getOwner().getRootComponent() : null));
 				// Dev note: Uncomment following to get more informations
 				/*logger.warning("Binding not valid: "+binding+" for owner "+getOwner()+" context="+(getOwner()!=null?(getOwner()).getRootComponent():null));			logger.info("BindingModel="+getOwner().getBindingModel());
 				binding.debugIsBindingValid();
@@ -270,14 +229,15 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 		updateDependancies();
 	}
 
-	protected void finalizeDeserialization()
-	{
+	@Override
+	protected void finalizeDeserialization() {
 		finalizeDeserialization(false);
 		if (owner != null && hasBinding() && isValid()) {
 			owner.notifyBindingChanged(this);
 		}
 	}
 
+	@Override
 	protected void updateDependancies()
 	{
 		if (getOwner() instanceof FIBComponent) {
@@ -304,7 +264,7 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 								for (Expression p : primitives) {
 									String primitiveValue = null;
 									if (p instanceof Variable) {
-										primitiveValue = ((Variable)p).getName();
+										primitiveValue = ((Variable) p).getName();
 									}
 									if (p instanceof Function) {
 										primitiveValue = ((Function)p).getName();
@@ -330,7 +290,7 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 							for (Expression p : primitives) {
 								String primitiveValue = null;
 								if (p instanceof Variable) {
-									primitiveValue = ((Variable)p).getName();
+									primitiveValue = ((Variable) p).getName();
 								}
 								if (p instanceof Function) {
 									primitiveValue = ((Function)p).getName();
@@ -361,16 +321,6 @@ public interface DataBindingImpl implements AccessibleProxyObject, StringConvert
 			}
 
 		}
-	}
-
-	public FIBModelAttribute getBindingAttribute()
-	{
-		return bindingAttribute;
-	}
-
-	public void setBindingAttribute(FIBModelAttribute bindingAttribute)
-	{
-		this.bindingAttribute = bindingAttribute;
 	}
 
 }

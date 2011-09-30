@@ -19,71 +19,17 @@
  */
 package org.openflexo.fib.model;
 
-import javax.swing.JComponent;
+import org.openflexo.model.annotations.ModelEntity;
 
-import org.openflexo.fib.model.FIBPanel.Layout;
-
-
-
+@ModelEntity
 public interface BoxLayoutConstraints extends ComponentConstraints {
 
-	private static final String ALIGNMENT_X = "alignmentX";
-	private static final String ALIGNMENT_Y = "alignmentY";
+	public float getAlignmentX();
 
-	public BoxLayoutConstraints()
-	{
-		super();
-	}
+	public void setAlignmentX(float x);
 
-	protected BoxLayoutConstraints(String someConstraints)
-	{
-		super(someConstraints);
-	}
+	public float getAlignmentY();
 
-	BoxLayoutConstraints(ComponentConstraints someConstraints)
-	{
-		super(someConstraints);
-	}
+	public void setAlignmentY(float y);
 
-	public BoxLayoutConstraints(int index)
-	{
-		super();
-		setIndex(index);
-	}
-
-	@Override
-	protected Layout getType()
-	{
-		return Layout.box;
-	}
-
-	public float getAlignmentX()
-	{
-		return getFloatValue(ALIGNMENT_X,0.5f);
-	}
-
-	public void setAlignmentX(float x)
-	{
-		setFloatValue(ALIGNMENT_X,x);
-	}
-
-	public float getAlignmentY()
-	{
-		return getFloatValue(ALIGNMENT_Y,0.5f);
-	}
-
-	public void setAlignmentY(float y)
-	{
-		setFloatValue(ALIGNMENT_Y,y);
-	}
-
-
-	@Override
-	public void performConstrainedAddition(JComponent container,
-			JComponent contained)
-	{
-		contained.setAlignmentX(getAlignmentX());
-		contained.setAlignmentY(getAlignmentY());
-		container.add(contained);
-	}
 }

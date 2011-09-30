@@ -19,22 +19,9 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-import javax.swing.Icon;
-
-public class FIBIconColumn extends FIBTableColumn {
-
-	@Override
-	public Type getDefaultDataClass()
-	{
-		return Icon.class;
-	}
-
-	@Override
-	public ColumnType getColumnType()
-	{
-		return ColumnType.Icon;
-	}
+@ModelEntity
+public interface FIBIconColumn extends FIBTableColumn {
 
 }

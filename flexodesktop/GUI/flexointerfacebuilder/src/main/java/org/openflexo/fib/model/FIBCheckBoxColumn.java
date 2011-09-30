@@ -19,19 +19,9 @@
  */
 package org.openflexo.fib.model;
 
-import java.lang.reflect.Type;
+import org.openflexo.model.annotations.ModelEntity;
 
-public class FIBCheckBoxColumn extends FIBTableColumn {
+@ModelEntity
+public interface FIBCheckBoxColumn extends FIBTableColumn {
 
-	@Override
-	public Type getDefaultDataClass()
-	{
-		return Boolean.class;
-	}
-
-	@Override
-	public ColumnType getColumnType()
-	{
-		return ColumnType.CheckBox;
-	}
 }

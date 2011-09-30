@@ -137,7 +137,7 @@ public interface FIBComponent extends FIBModelObject, TreeNode {
 	@Setter(id = PARENT)
 	public void setParent(FIBContainer parent);
 
-	@Getter(id=CONSTRAINTS)
+	@Getter(id = CONSTRAINTS, inverse = ComponentConstraints.COMPONENT)
 	@XMLAttribute
 	public ComponentConstraints getConstraints();
 
