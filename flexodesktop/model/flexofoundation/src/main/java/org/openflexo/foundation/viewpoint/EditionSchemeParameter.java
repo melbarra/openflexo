@@ -20,20 +20,18 @@
 package org.openflexo.foundation.viewpoint;
 
 import java.lang.reflect.Type;
-import java.util.logging.Logger;
+import java.util.Hashtable;
 
-import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.antar.binding.BindingModel;
 import org.openflexo.foundation.Inspectors;
 import org.openflexo.foundation.ontology.OntologyIndividual;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
 import org.openflexo.foundation.viewpoint.inspector.InspectorBindingAttribute;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
+import org.openflexo.toolbox.StringUtils;
 
 public abstract class EditionSchemeParameter extends ViewPointObject {
-
-	private static final Logger logger = Logger.getLogger(EditionSchemeParameter.class.getPackage().getName());
 
 	public static enum WidgetType
 	{
@@ -181,11 +179,19 @@ public abstract class EditionSchemeParameter extends ViewPointObject {
 		this.usePaletteLabelAsDefaultValue = usePaletteLabelAsDefaultValue;
 	}
 
-	public boolean evaluateCondition(BindingEvaluationContext parameterRetriever)
+	public boolean evaluateCondition(final Hashtable<String,Object> parameterValues)
 	{
-		if (getConditional().isValid()) {
-			return (Boolean)getConditional().getBindingValue(parameterRetriever);
+		/*if (condition == null) {
+			return true;
 		}
+		try {
+			return condition.evaluateCondition(parameterValues);
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+		} catch (UnresolvedExpressionException e) {
+			e.printStackTrace();
+		}
+		return false;*/
 		return true;
 	}
 	
@@ -200,8 +206,8 @@ public abstract class EditionSchemeParameter extends ViewPointObject {
 		return getScheme().getParameters().indexOf(this);
 	}
 	
-	private ViewPointDataBinding conditional;
-	private ViewPointDataBinding defaultValue;
+	private InspectorDataBinding conditional;
+	private InspectorDataBinding defaultValue;
 
 	public static enum ParameterBindingAttribute implements InspectorBindingAttribute
 	{
@@ -228,13 +234,13 @@ public abstract class EditionSchemeParameter extends ViewPointObject {
 		return DEFAULT_VALUE;
 	}
 
-	public ViewPointDataBinding getConditional() 
+	public InspectorDataBinding getConditional() 
 	{
-		if (conditional == null) conditional = new ViewPointDataBinding(this,ParameterBindingAttribute.conditional,getConditionalBindingDefinition());
+		if (conditional == null) conditional = new InspectorDataBinding(this,ParameterBindingAttribute.conditional,getConditionalBindingDefinition());
 		return conditional;
 	}
 
-	public void setConditional(ViewPointDataBinding conditional) 
+	public void setConditional(InspectorDataBinding conditional) 
 	{
 		conditional.setOwner(this);
 		conditional.setBindingAttribute(ParameterBindingAttribute.conditional);
@@ -253,30 +259,31 @@ public abstract class EditionSchemeParameter extends ViewPointObject {
 		return getScheme().getParametersBindingModel();
 	}
 
-	public ViewPointDataBinding getDefaultValue() 
+	public InspectorDataBinding getDefaultValue() 
 	{
-		if (defaultValue == null) defaultValue = new ViewPointDataBinding(this,ParameterBindingAttribute.defaultValue,getDefaultValueBindingDefinition());
+		if (defaultValue == null) defaultValue = new InspectorDataBinding(this,ParameterBindingAttribute.defaultValue,getDefaultValueBindingDefinition());
 		return defaultValue;
 	}
 
-	public void setDefaultValue(ViewPointDataBinding defaultValue) 
-	{
-		defaultValue.setOwner(this);
-		defaultValue.setBindingAttribute(ParameterBindingAttribute.defaultValue);
-		defaultValue.setBindingDefinition(getDefaultValueBindingDefinition());
-		this.defaultValue = defaultValue;
-	}
-
-	public Object getDefaultValue(ViewPointPaletteElement element, BindingEvaluationContext parameterRetriever) 
+	public String getDefaultValue(ViewPointPaletteElement element) 
 	{
 		//System.out.println("Default value for "+element.getName()+" ???");
 		if (getUsePaletteLabelAsDefaultValue() && (element != null)) {
 			return element.getName();
 		}
-		if (getDefaultValue().isValid()) {
-			return getDefaultValue().getBindingValue(parameterRetriever);
+		if ((element != null) && (element.getParameter(getName()) != null) && !StringUtils.isEmpty(element.getParameter(getName()).getValue())) {
+			//System.out.println("Hop: "+element.getParameter(getName()).getValue());
+			return element.getParameter(getName()).getValue();
 		}
-		return null;
+		return getDefaultValue().toString();
+	}
+
+	public void setDefaultValue(InspectorDataBinding defaultValue) 
+	{
+		defaultValue.setOwner(this);
+		defaultValue.setBindingAttribute(ParameterBindingAttribute.defaultValue);
+		defaultValue.setBindingDefinition(getDefaultValueBindingDefinition());
+		this.defaultValue = defaultValue;
 	}
 
 

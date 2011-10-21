@@ -1,4 +1,4 @@
-package org.openflexo.foundation.viewpoint.binding;
+package org.openflexo.foundation.viewpoint.inspector;
 
 import java.lang.reflect.Type;
 import java.util.Hashtable;
@@ -11,7 +11,7 @@ import org.openflexo.antar.binding.BindingVariable;
 import org.openflexo.foundation.viewpoint.EditionPattern;
 import org.openflexo.foundation.viewpoint.PatternRole;
 
-public class EditionPatternPathElement<E extends Bindable> implements BindingVariable<EditionPattern>
+public class EditionPatternPathElement<E extends Bindable> implements BindingVariable<E,EditionPattern>
 {
 	static final Logger logger = Logger.getLogger(EditionPatternPathElement.class.getPackage().getName());
 
@@ -103,13 +103,13 @@ public class EditionPatternPathElement<E extends Bindable> implements BindingVar
 	}
 			
 	@Override
-	public EditionPattern getBindingValue(Object target, BindingEvaluationContext context) 
+	public EditionPattern getBindingValue(E target, BindingEvaluationContext context) 
 	{
 		return editionPattern;
 	}
 
     @Override
-    public void setBindingValue(EditionPattern value, Object target, BindingEvaluationContext context) 
+    public void setBindingValue(EditionPattern value, E target, BindingEvaluationContext context) 
     {
     	// Not settable
     }

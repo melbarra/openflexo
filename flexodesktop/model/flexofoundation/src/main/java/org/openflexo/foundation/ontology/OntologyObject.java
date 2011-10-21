@@ -753,7 +753,6 @@ public abstract class OntologyObject extends AbstractOntologyObject implements I
    
    public Vector<OntologyProperty> getPropertiesTakingMySelfAsRange()
    {
-	   getDeclaredPropertiesTakingMySelfAsRange(); // Required in some cases: TODO: investigate this
 	   if (!domainsAndRangesAreRecursivelyUpToDate) 
 		   recursivelySearchRangeAndDomains();
 	   return propertiesTakingMySelfAsRange;
@@ -761,7 +760,6 @@ public abstract class OntologyObject extends AbstractOntologyObject implements I
 
    public Vector<OntologyProperty> getPropertiesTakingMySelfAsDomain() 
    {
-	   getDeclaredPropertiesTakingMySelfAsDomain(); // Required in some cases: TODO: investigate this
 	   if (!domainsAndRangesAreRecursivelyUpToDate) 
 		   recursivelySearchRangeAndDomains();
 	   return propertiesTakingMySelfAsDomain;
@@ -771,11 +769,7 @@ public abstract class OntologyObject extends AbstractOntologyObject implements I
    {
 	   declaredPropertiesTakingMySelfAsRange.clear();
 	   declaredPropertiesTakingMySelfAsDomain.clear();
-	   
-	   Vector<FlexoOntology> alreadyDone = new Vector<FlexoOntology>();
-	   for (FlexoOntology ontology : getOntologyLibrary().getAllOntologies()) {
-		   searchRangeAndDomains(declaredPropertiesTakingMySelfAsRange,declaredPropertiesTakingMySelfAsDomain,ontology,alreadyDone);
-	   }
+	   searchRangeAndDomains(declaredPropertiesTakingMySelfAsRange,declaredPropertiesTakingMySelfAsDomain,getFlexoOntology(),new Vector<FlexoOntology>());
 	   domainsAndRangesAreUpToDate = true;
    }
    
@@ -793,12 +787,12 @@ public abstract class OntologyObject extends AbstractOntologyObject implements I
 	   if (alreadyDone.contains(ontology)) return;
 	   alreadyDone.add(ontology);
 	   for (OntologyProperty p : ontology.getObjectProperties()) {
-		   if (p.getRange() != null && p.getRange().isSuperConceptOf(this)) rangeProperties.add(p);
-		   if (p.getDomain() != null && p.getDomain().isSuperConceptOf(this)) domainProperties.add(p);
+		   if (p.getRange() != null && p.getRange().equals(this)) rangeProperties.add(p);
+		   if (p.getDomain() != null && p.getDomain().equals(this)) domainProperties.add(p);
 	   }
 	   for (OntologyProperty p : ontology.getDataProperties()) {
-		   if (p.getRange() != null && p.getRange().isSuperConceptOf(this)) rangeProperties.add(p);
-		   if (p.getDomain() != null && p.getDomain().isSuperConceptOf(this)) domainProperties.add(p);
+		   if (p.getRange() != null && p.getRange().equals(this)) rangeProperties.add(p);
+		   if (p.getDomain() != null && p.getDomain().equals(this)) domainProperties.add(p);
 	   }
 	   for (FlexoOntology o : ontology.getImportedOntologies()) {
 		   searchRangeAndDomains(rangeProperties,domainProperties,o,alreadyDone);

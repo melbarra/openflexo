@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
 import org.openflexo.toolbox.ToolBox;
 
-public class MethodDefinition extends Observable implements ComplexPathElement<Object> {
+public class MethodDefinition extends Observable implements ComplexPathElement<Object,Object> {
 
 	private static final Logger logger = Logger.getLogger(MethodDefinition.class.getPackage().getName());
 

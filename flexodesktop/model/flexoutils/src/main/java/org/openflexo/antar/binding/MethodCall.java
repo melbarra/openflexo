@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
 
 
-public class MethodCall extends Observable  implements ComplexPathElement<Object> {
+public class MethodCall extends Observable  implements ComplexPathElement<Object,Object> {
 
 	static final Logger logger = Logger.getLogger(MethodCall.class.getPackage().getName());
 

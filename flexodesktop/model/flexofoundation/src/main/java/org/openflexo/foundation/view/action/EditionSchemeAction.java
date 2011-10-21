@@ -60,9 +60,6 @@ import org.openflexo.foundation.viewpoint.GoToAction;
 import org.openflexo.foundation.viewpoint.ObjectPropertyAssertion;
 import org.openflexo.foundation.viewpoint.PatternRole;
 import org.openflexo.foundation.viewpoint.ShapePatternRole;
-import org.openflexo.foundation.viewpoint.binding.EditionSchemeParameterListPathElement;
-import org.openflexo.foundation.viewpoint.binding.GraphicalElementPathElement.ViewPathElement;
-import org.openflexo.foundation.viewpoint.binding.PatternRolePathElement;
 import org.openflexo.inspector.LocalizedString;
 import org.openflexo.toolbox.StringUtils;
 
@@ -115,7 +112,7 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 		
 		// Perform actions
 		for (EditionAction action : getEditionScheme().getActions()) {
-			if (action.evaluateCondition(this)) {
+			if (action.evaluateCondition(getEditionPatternInstance())) {
 				if (action instanceof org.openflexo.foundation.viewpoint.AddShape) {
 					logger.info("Add shape with patternRole="+action.getPatternRole());
 					ViewShape newShape = performAddShape((org.openflexo.foundation.viewpoint.AddShape)action);
@@ -237,7 +234,7 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 		
 		// At this end, look after GoToAction
 		for (EditionAction action : getEditionScheme().getActions()) {
-			if (action.evaluateCondition(this)) {
+			if (action.evaluateCondition(getEditionPatternInstance())) {
 				if (action instanceof GoToAction) {
 					performGoToAction((GoToAction)action);
 				}
@@ -308,11 +305,11 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 	protected OntologyIndividual finalizePerformAddIndividual(AddIndividual action, OntologyIndividual newIndividual)
 	{
 		for (DataPropertyAssertion dataPropertyAssertion : action.getDataAssertions()) {
-			if (dataPropertyAssertion.evaluateCondition(this)) {
+			if (dataPropertyAssertion.evaluateCondition(parameterValues)) {
 				logger.info("DataPropertyAssertion="+dataPropertyAssertion);
 				OntologyProperty property = dataPropertyAssertion.getOntologyProperty();
 				logger.info("Property="+property);
-				Object value = dataPropertyAssertion.getValue(this);
+				Object value = getParameterValues().get(dataPropertyAssertion.getValueParameter().getName());
 				if (value instanceof String) {
 					newIndividual.getOntResource().addProperty(
 							property.getOntProperty(), 
@@ -353,7 +350,7 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 			}
 		}
 		for (ObjectPropertyAssertion objectPropertyAssertion : action.getObjectAssertions()) {
-			if (objectPropertyAssertion.evaluateCondition(this)) {
+			if (objectPropertyAssertion.evaluateCondition(parameterValues)) {
 				//logger.info("ObjectPropertyAssertion="+objectPropertyAssertion);
 				OntologyProperty property = objectPropertyAssertion.getOntologyProperty();
 				//logger.info("Property="+property);
@@ -387,7 +384,6 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 		String newClassName = (String)action.getClassName().getBindingValue(this);
 		OntologyClass newClass = null;
 		try {
-			logger.info("Adding class "+newClassName+" as "+father);
 			newClass = getProject().getProjectOntology().createOntologyClass(newClassName, father);
 			logger.info("Added class "+newClass.getName()+" as "+father);
 		} catch (DuplicateURIException e) {
@@ -542,7 +538,7 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 		addShemaAction.doAction();
 		if (addShemaAction.hasActionExecutionSucceeded()) {
 			View newShema = addShemaAction.getNewShema().getShema();
-			ShapePatternRole shapePatternRole = action.getShapePatternRole();
+			ShapePatternRole shapePatternRole = action.retrieveShapePatternRole();
 			if (shapePatternRole == null) {
 				logger.warning("Sorry, shape pattern role is undefined");
 				return newShema;
@@ -588,18 +584,8 @@ extends FlexoAction<A,FlexoModelObject,FlexoModelObject> implements BindingEvalu
 	}
 
 	@Override
-	public Object getValue(BindingVariable variable) 
-	{
-		if (variable instanceof EditionSchemeParameterListPathElement) {
-			return parameterValues;
-		}
-		else if (variable instanceof ViewPathElement) {
-			if (variable.getVariableName().equals(EditionScheme.TOP_LEVEL)) return retrieveOEShema();
-		}
-		else if (variable instanceof PatternRolePathElement) {
-			return getEditionPatternInstance().getPatternActor(((PatternRolePathElement)variable).getPatternRole());
-		}
-		logger.warning("Unexpected variable requested in EditionSchemeAction "+variable);
+	public Object getValue(BindingVariable variable) {
+		logger.info("Je dois retourner un truc pour "+variable);
 		return null;
 	}
 }

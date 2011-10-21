@@ -1,8 +1,7 @@
-package org.openflexo.foundation.viewpoint.binding;
+package org.openflexo.foundation.viewpoint.inspector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.openflexo.antar.binding.BindingPathElement;
 import org.openflexo.antar.binding.DefaultBindingFactory;
@@ -11,8 +10,6 @@ import org.openflexo.foundation.viewpoint.PatternRole;
 
 public final class EditionPatternBindingFactory extends DefaultBindingFactory 
 {
-	static final Logger logger = Logger.getLogger(EditionPatternBindingFactory.class.getPackage().getName());
-	
 	private static List<BindingPathElement> EMPTY_LIST = new ArrayList<BindingPathElement>();
 
 	@Override
@@ -25,7 +22,7 @@ public final class EditionPatternBindingFactory extends DefaultBindingFactory
 				return ((EditionPatternInstancePathElement) father).getPatternRolePathElement(pr);
 			}
 			else {
-				logger.warning("Not found pattern role: "+propertyName);
+				InspectorEntry.logger.warning("Not found pattern role: "+propertyName);
 			}
 		}
 		else if (father instanceof EditionPatternPathElement) {
@@ -35,11 +32,11 @@ public final class EditionPatternBindingFactory extends DefaultBindingFactory
 				return ((EditionPatternPathElement) father).getPatternRolePathElement(pr);
 			}
 			else {
-				logger.warning("Not found pattern role: "+propertyName);
+				InspectorEntry.logger.warning("Not found pattern role: "+propertyName);
 			}
 		}
 		else if (father instanceof PatternRolePathElement) {
-			for (BindingPathElement prop : ((PatternRolePathElement<?>)father).getAllProperties()) {
+			for (BindingPathElement prop : ((PatternRolePathElement<?,?>)father).getAllProperties()) {
 				if (prop.getLabel().equals(propertyName)) return prop;
 			}
 			return null;
@@ -58,12 +55,6 @@ public final class EditionPatternBindingFactory extends DefaultBindingFactory
 		}
 		else if (father instanceof GraphicalElementPathElement) {
 			for (BindingPathElement prop : ((GraphicalElementPathElement<?>)father).getAllProperties()) {
-				if (prop.getLabel().equals(propertyName)) return prop;
-			}
-			return null;
-		}
-		else if (father instanceof OntologyObjectPathElement) {
-			for (BindingPathElement prop : ((OntologyObjectPathElement<?>)father).getAllProperties()) {
 				if (prop.getLabel().equals(propertyName)) return prop;
 			}
 			return null;
@@ -92,9 +83,6 @@ public final class EditionPatternBindingFactory extends DefaultBindingFactory
 		else if (father instanceof GraphicalElementPathElement) {
 			return ((GraphicalElementPathElement) father).getAllProperties();
 		}
-		else if (father instanceof OntologyObjectPathElement) {
-			return ((OntologyObjectPathElement) father).getAllProperties();
-		}
 		return super.getAccessibleBindingPathElements(father);
 	}
 	
@@ -117,9 +105,6 @@ public final class EditionPatternBindingFactory extends DefaultBindingFactory
 			return EMPTY_LIST;
 		}
 		else if (father.getType() instanceof GraphicalElementPathElement) {
-			return EMPTY_LIST;
-		}
-		else if (father instanceof OntologyObjectPathElement) {
 			return EMPTY_LIST;
 		}
 		return super.getAccessibleCompoundBindingPathElements(father);

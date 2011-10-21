@@ -19,21 +19,18 @@
  */
 package org.openflexo.foundation.viewpoint;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.antar.binding.TypeUtils;
 import org.openflexo.foundation.FlexoResourceCenter;
 import org.openflexo.foundation.Inspectors;
-import org.openflexo.foundation.viewpoint.binding.PatternRolePathElement;
 import org.openflexo.foundation.viewpoint.dm.EditionSchemeInserted;
 import org.openflexo.foundation.viewpoint.dm.EditionSchemeRemoved;
 import org.openflexo.foundation.viewpoint.dm.PatternRoleInserted;
 import org.openflexo.foundation.viewpoint.dm.PatternRoleRemoved;
 import org.openflexo.foundation.viewpoint.inspector.EditionPatternInspector;
+import org.openflexo.foundation.viewpoint.inspector.PatternRolePathElement;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.xmlcode.StringConvertable;
 import org.openflexo.xmlcode.StringEncoder;
@@ -50,9 +47,6 @@ public class EditionPattern extends ViewPointObject implements StringConvertable
 	private Vector<PatternRole> patternRoles;
 	private Vector<EditionScheme> editionSchemes;
 	private EditionPatternInspector inspector;
-	
-	private OntologicObjectPatternRole primaryConceptRole;
-	private GraphicalElementPatternRole primaryRepresentationRole;
 	
 	private ViewPoint _calc;
 
@@ -156,38 +150,19 @@ public class EditionPattern extends ViewPointObject implements StringConvertable
 		notifyObservers(new PatternRoleRemoved(aPatternRole, this));
 	}
 	
-	public <R> List<R> getPatternRoles(Class<R> type)
-	{
-		List<R> returned = new ArrayList<R>();
-		for (PatternRole r : patternRoles) {
-			if (TypeUtils.isTypeAssignableFrom(type, r.getClass())) {
-				returned.add((R)r);
-			}
-		}
-		return returned;
-	}
-	
-	public List<ShapePatternRole> getShapePatternRoles()
-	{
-		return getPatternRoles(ShapePatternRole.class);
-	}
-	
-	public List<ConnectorPatternRole> getConnectorPatternRoles()
-	{
-		return getPatternRoles(ConnectorPatternRole.class);
-	}
-	
 	public ShapePatternRole getDefaultShapePatternRole()
 	{
-		List<ShapePatternRole> l = getShapePatternRoles();
-		if (l.size()>0) return l.get(0);
+		for (PatternRole r : patternRoles) {
+			if (r instanceof ShapePatternRole) return (ShapePatternRole)r;
+		}
 		return null;
 	}
 	
 	public ConnectorPatternRole getDefaultConnectorPatternRole()
 	{
-		List<ConnectorPatternRole> l = getConnectorPatternRoles();
-		if (l.size()>0) return l.get(0);
+		for (PatternRole r : patternRoles) {
+			if (r instanceof ConnectorPatternRole) return (ConnectorPatternRole)r;
+		}
 		return null;
 	}
 	
@@ -588,37 +563,6 @@ public class EditionPattern extends ViewPointObject implements StringConvertable
 		for (PatternRole role : getPatternRoles()) {
 			_bindingModel.addToBindingVariables(PatternRolePathElement.makePatternRolePathElement(role,this));
 		}	
-	}
-
-	public OntologicObjectPatternRole getDefaultPrimaryConceptRole() {
-		List<OntologicObjectPatternRole> roles = getPatternRoles(OntologicObjectPatternRole.class);
-		if (roles.size()>0) return roles.get(0);
-		return null;
-	}
-
-	public GraphicalElementPatternRole getDefaultPrimaryRepresentationRole() {
-		List<GraphicalElementPatternRole> roles = getPatternRoles(GraphicalElementPatternRole.class);
-		if (roles.size()>0) return roles.get(0);
-		return null;
-	}
-
-	public OntologicObjectPatternRole getPrimaryConceptRole() {
-		if (primaryConceptRole == null) return getDefaultPrimaryConceptRole();
-		return primaryConceptRole;
-	}
-
-	public void setPrimaryConceptRole(OntologicObjectPatternRole primaryConceptRole) {
-		this.primaryConceptRole = primaryConceptRole;
-	}
-
-	public GraphicalElementPatternRole getPrimaryRepresentationRole() {
-		if (primaryRepresentationRole == null) return getDefaultPrimaryRepresentationRole();
-		return primaryRepresentationRole;
-	}
-
-	public void setPrimaryRepresentationRole(
-			GraphicalElementPatternRole primaryRepresentationRole) {
-		this.primaryRepresentationRole = primaryRepresentationRole;
 	}
 
 

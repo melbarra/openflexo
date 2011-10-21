@@ -28,7 +28,7 @@ import org.openflexo.foundation.ontology.OntologyObject;
 import org.openflexo.foundation.ontology.OntologyProperty;
 import org.openflexo.foundation.ontology.RestrictionStatement.RestrictionType;
 import org.openflexo.foundation.view.action.EditionSchemeAction;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
 
 
 
@@ -88,7 +88,7 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 		}
 	}*/
 	
-	private ViewPointDataBinding object;
+	private InspectorDataBinding object;
 	
 	private BindingDefinition OBJECT = new BindingDefinition("object", OntologyObject.class, BindingDefinitionType.GET, false);
 	
@@ -97,13 +97,13 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 		return OBJECT;
 	}
 
-	public ViewPointDataBinding getObject() 
+	public InspectorDataBinding getObject() 
 	{
-		if (object == null) object = new ViewPointDataBinding(this,EditionActionBindingAttribute.object,getObjectBindingDefinition());
+		if (object == null) object = new InspectorDataBinding(this,EditionActionBindingAttribute.object,getObjectBindingDefinition());
 		return object;
 	}
 
-	public void setObject(ViewPointDataBinding object) 
+	public void setObject(InspectorDataBinding object) 
 	{
 		object.setOwner(this);
 		object.setBindingAttribute(EditionActionBindingAttribute.object);
@@ -112,7 +112,7 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 	}
 
 
-	private ViewPointDataBinding restrictionType;
+	private InspectorDataBinding restrictionType;
 	
 	private BindingDefinition RESTRICTION_TYPE = new BindingDefinition("restrictionType", RestrictionType.class, BindingDefinitionType.GET, false);
 	
@@ -121,13 +121,13 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 		return RESTRICTION_TYPE;
 	}
 
-	public ViewPointDataBinding getRestrictionType() 
+	public InspectorDataBinding getRestrictionType() 
 	{
-		if (restrictionType == null) restrictionType = new ViewPointDataBinding(this,EditionActionBindingAttribute.restrictionType,getRestrictionTypeBindingDefinition());
+		if (restrictionType == null) restrictionType = new InspectorDataBinding(this,EditionActionBindingAttribute.restrictionType,getRestrictionTypeBindingDefinition());
 		return restrictionType;
 	}
 
-	public void setRestrictionType(ViewPointDataBinding restrictionType) 
+	public void setRestrictionType(InspectorDataBinding restrictionType) 
 	{
 		restrictionType.setOwner(this);
 		restrictionType.setBindingAttribute(EditionActionBindingAttribute.restrictionType);
@@ -143,7 +143,7 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 	}
 
 
-	private ViewPointDataBinding cardinality;
+	private InspectorDataBinding cardinality;
 	
 	private BindingDefinition CARDINALITY = new BindingDefinition("cardinality", Integer.class, BindingDefinitionType.GET, false);
 	
@@ -152,13 +152,13 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 		return CARDINALITY;
 	}
 
-	public ViewPointDataBinding getCardinality() 
+	public InspectorDataBinding getCardinality() 
 	{
-		if (cardinality == null) cardinality = new ViewPointDataBinding(this,EditionActionBindingAttribute.cardinality,getCardinalityBindingDefinition());
+		if (cardinality == null) cardinality = new InspectorDataBinding(this,EditionActionBindingAttribute.cardinality,getCardinalityBindingDefinition());
 		return cardinality;
 	}
 
-	public void setCardinality(ViewPointDataBinding cardinality) 
+	public void setCardinality(InspectorDataBinding cardinality) 
 	{
 		cardinality.setOwner(this);
 		cardinality.setBindingAttribute(EditionActionBindingAttribute.cardinality);
@@ -168,7 +168,7 @@ public class AddRestrictionStatement extends AddStatement<RestrictionStatementPa
 
 	public int getCardinality(EditionSchemeAction action)
 	{
-		return ((Number)getCardinality().getBindingValue(action)).intValue();
+		return (Integer)getCardinality().getBindingValue(action);
 	}
 
 

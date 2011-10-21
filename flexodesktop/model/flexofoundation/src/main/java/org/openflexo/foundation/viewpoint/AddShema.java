@@ -19,20 +19,20 @@
  */
 package org.openflexo.foundation.viewpoint;
 
+import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.openflexo.antar.binding.BindingDefinition;
-import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.foundation.Inspectors;
 import org.openflexo.foundation.view.action.EditionSchemeAction;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
+import org.openflexo.foundation.viewpoint.PatternRole.PatternRoleType;
 
 
 public class AddShema extends EditionAction<ShemaPatternRole> {
 
 	private static final Logger logger = Logger.getLogger(AddShema.class.getPackage().getName());
 	
-	private ShapePatternRole shapePatternRole;
+	private String shemaName;
+	private String shapePatternRole;
 	
 	public AddShema() {
 	}
@@ -49,9 +49,35 @@ public class AddShema extends EditionAction<ShemaPatternRole> {
 		return Inspectors.VPM.ADD_SHEMA_INSPECTOR;
 	}
 
+	public String _getShemaName()
+	{
+		return shemaName;
+	}
+	
+	public void _setShemaName(String aShemaName)
+	{
+		shemaName = aShemaName;
+	}
+	
+	private Vector<String> availableShemaNameValues = null;
+	
+	public Vector<String> getAvailableShemaNameValues()
+	{
+		if (availableShemaNameValues == null) {
+			availableShemaNameValues = new Vector<String>();
+			for (PatternRole pr : getEditionPattern().getPatternRoles()) {
+				availableShemaNameValues.add(pr.getPatternRoleName());
+			}
+			for (EditionSchemeParameter p : getScheme().getParameters()) {
+				availableShemaNameValues.add(p.getName());
+			}
+		}
+		return availableShemaNameValues;
+	}
+
 	public String getShemaName(EditionSchemeAction action)
 	{
-		return (String)getShemaName().getBindingValue(action);
+		return generateStringFromIdentifier(_getShemaName(),action);
 	}
 
 	@Override
@@ -82,38 +108,39 @@ public class AddShema extends EditionAction<ShemaPatternRole> {
 		}
 	}*/
 
-	public ShapePatternRole getShapePatternRole()
+	public String _getShapePatternRole()
 	{
+		if ((shapePatternRole == null) && (getAvailableShapePatternRoleValues().size() > 0)) {
+			shapePatternRole = getAvailableShapePatternRoleValues().firstElement();
+		}
 		return shapePatternRole;
 	}
 
-	public void setShapePatternRole(ShapePatternRole shapePatternRole)
+	public void _setShapePatternRole(String shapePatternRole)
 	{
 		this.shapePatternRole = shapePatternRole;
 	}
 
-	private ViewPointDataBinding shemaName;
+	private Vector<String> availableShapePatternRoleValues = null;
 	
-	private BindingDefinition SHEMA_NAME = new BindingDefinition("shemaName", String.class, BindingDefinitionType.GET, false);
-	
-	public BindingDefinition getShemaNameBindingDefinition()
+	public Vector<String> getAvailableShapePatternRoleValues()
 	{
-		return SHEMA_NAME;
+		if (availableShapePatternRoleValues == null) {
+			availableShapePatternRoleValues = new Vector<String>();
+			for (PatternRole pr : getEditionPattern().getPatternRoles()) {
+				if (pr.getType() == PatternRoleType.Shape) {
+					availableShapePatternRoleValues.add(pr.getPatternRoleName());
+				}
+			}
+		}
+		return availableShapePatternRoleValues;
 	}
 
-	public ViewPointDataBinding getShemaName() 
+
+	public ShapePatternRole retrieveShapePatternRole()
 	{
-		if (shemaName == null) shemaName = new ViewPointDataBinding(this,EditionActionBindingAttribute.shemaName,getShemaNameBindingDefinition());
-		return shemaName;
+		return (ShapePatternRole)getEditionPattern().getPatternRole(_getShapePatternRole());
 	}
 
-	public void setShemaName(ViewPointDataBinding shemaName) 
-	{
-		shemaName.setOwner(this);
-		shemaName.setBindingAttribute(EditionActionBindingAttribute.shemaName);
-		shemaName.setBindingDefinition(getShemaNameBindingDefinition());
-		this.shemaName = shemaName;
-	}
-	
 
 }

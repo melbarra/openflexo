@@ -5,14 +5,14 @@ import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.antar.binding.BindingFactory;
 import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
 import org.openflexo.foundation.viewpoint.inspector.InspectorBindingAttribute;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
 
 
 public abstract class GraphicalElementPatternRole extends PatternRole implements Bindable {
 
 	private boolean readOnlyLabel;
-	private ViewPointDataBinding label;
+	private InspectorDataBinding label;
 
 	
  	public abstract Object getGraphicalRepresentation(); 
@@ -42,13 +42,13 @@ public abstract class GraphicalElementPatternRole extends PatternRole implements
 		return LABEL;
 	}
 
-	public ViewPointDataBinding getLabel() 
+	public InspectorDataBinding getLabel() 
 	{
-		if (label == null) label = new ViewPointDataBinding(this,GraphicalElementBindingAttribute.label,getLabelBindingDefinition());
+		if (label == null) label = new InspectorDataBinding(this,GraphicalElementBindingAttribute.label,getLabelBindingDefinition());
 		return label;
 	}
 
-	public void setLabel(ViewPointDataBinding label) 
+	public void setLabel(InspectorDataBinding label) 
 	{
 		label.setOwner(this);
 		label.setBindingAttribute(GraphicalElementBindingAttribute.label);
@@ -78,34 +78,5 @@ public abstract class GraphicalElementPatternRole extends PatternRole implements
 		return getEditionPattern().getInspector().getBindingModel();
 	}
 	
-	public boolean getIsPrimaryRepresentationRole()
-	{
-		if (getEditionPattern() == null) return false;
-		return (getEditionPattern().getPrimaryRepresentationRole() == this);
-	}
-	
-	public void setIsPrimaryRepresentationRole(boolean isPrimary)
-	{
-		if (getEditionPattern() == null) return;
-		if (isPrimary) {
-			getEditionPattern().setPrimaryRepresentationRole(this);
-		}
-		else {
-			getEditionPattern().setPrimaryRepresentationRole(null);
-		}
-	}
-
-	@Override
-	public boolean getIsPrimaryRole()
-	{
-		return getIsPrimaryRepresentationRole();
-	}
-	
-	@Override
-	public void setIsPrimaryRole(boolean isPrimary)
-	{
-		setIsPrimaryRepresentationRole(isPrimary);
-	}
-
 
 }

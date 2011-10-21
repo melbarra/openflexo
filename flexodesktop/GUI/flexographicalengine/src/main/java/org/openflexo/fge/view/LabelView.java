@@ -58,8 +58,8 @@ import javax.swing.text.StyledDocument;
 import org.openflexo.fge.DrawingGraphicalRepresentation;
 import org.openflexo.fge.FGEConstants;
 import org.openflexo.fge.GraphicalRepresentation;
-import org.openflexo.fge.GraphicalRepresentation.TextAlignment;
 import org.openflexo.fge.ShapeGraphicalRepresentation;
+import org.openflexo.fge.GraphicalRepresentation.TextAlignment;
 import org.openflexo.fge.controller.DrawingController;
 import org.openflexo.fge.controller.DrawingPalette;
 import org.openflexo.fge.graphics.DrawUtils;
@@ -449,11 +449,6 @@ public class LabelView<O> extends JPanel implements FGEView<O> {
 	{
 		if (!isEditing)
 			return;
-		
-		// If not continous edition, do it now
-		if (!getGraphicalRepresentation().getContinuousTextEditing()) 
-			getGraphicalRepresentation().setText(textComponent.getText());
-
 		isEditing = false;
 		logger.info("Stop edition of "+getGraphicalRepresentation()+" getController()="+getController());
 
@@ -652,8 +647,7 @@ public class LabelView<O> extends JPanel implements FGEView<O> {
 				}
 			}
 			wasEdited = true;
-			if (getGraphicalRepresentation().getContinuousTextEditing()) 
-				getGraphicalRepresentation().setText(textComponent.getText());
+			getGraphicalRepresentation().setText(textComponent.getText());
 			updateBounds();
 			textComponent.setBounds(hOffset,vOffset,getWidth(),getHeight());
 		}
@@ -672,8 +666,7 @@ public class LabelView<O> extends JPanel implements FGEView<O> {
 				//if (!wasEdited) return;
 			}
 			wasEdited = true;
-			if (getGraphicalRepresentation().getContinuousTextEditing()) 
-				getGraphicalRepresentation().setText(textComponent.getText());
+			getGraphicalRepresentation().setText(textComponent.getText());
 			updateBounds();
 			textComponent.setBounds(hOffset,vOffset,getWidth(),getHeight());
 		}
@@ -684,8 +677,7 @@ public class LabelView<O> extends JPanel implements FGEView<O> {
         	if(!isEditing)
         		return;
 			wasEdited = true;
-			if (getGraphicalRepresentation().getContinuousTextEditing()) 
-				getGraphicalRepresentation().setText(textComponent.getText());
+			getGraphicalRepresentation().setText(textComponent.getText());
 			updateBounds();
 			textComponent.setBounds(hOffset,vOffset,getWidth(),getHeight());
 		}

@@ -23,9 +23,11 @@ import java.util.logging.Logger;
 
 import javax.naming.InvalidNameException;
 
+import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
 import org.openflexo.antar.binding.Bindable;
 import org.openflexo.antar.binding.BindingFactory;
 import org.openflexo.antar.binding.BindingModel;
+import org.openflexo.antar.binding.BindingVariable;
 import org.openflexo.foundation.ontology.EditionPatternInstance;
 import org.openflexo.foundation.ontology.EditionPatternReference;
 import org.openflexo.foundation.rm.DuplicateResourceException;
@@ -35,7 +37,7 @@ import org.openflexo.foundation.xml.VEShemaBuilder;
 import org.openflexo.localization.FlexoLocalization;
 
 
-public abstract class ViewElement extends ViewObject implements Bindable {
+public abstract class ViewElement extends ViewObject implements Bindable, BindingEvaluationContext {
 
     private static final Logger logger = Logger.getLogger(ViewElement.class.getPackage().getName());
 
@@ -72,8 +74,8 @@ public abstract class ViewElement extends ViewObject implements Bindable {
     @Override
     public String getName() 
     {
-    	if (isBoundInsideEditionPattern()) {
-    		return getLabelValue();
+    	if (labelIsBoundToOntologicConcept()) {
+    		return getOntologicConceptLabelValue();
     	}
      	return super.getName();
     }
@@ -82,8 +84,8 @@ public abstract class ViewElement extends ViewObject implements Bindable {
 	public void setName(String name)
 	{
 		//logger.info("setName of OEShemaElement with "+name);
-    	if (isBoundInsideEditionPattern()) {
-    		setLabelValue(name);
+    	if (labelIsBoundToOntologicConcept()) {
+    		setOntologicConceptLabelValue(name);
     	}
     	else {
     		try {
@@ -100,29 +102,22 @@ public abstract class ViewElement extends ViewObject implements Bindable {
 
 	//public abstract AddShemaElementAction getEditionAction();
 
-	/**
-	 * Return a flag indicating if current graphical element is bound inside
-	 * an edition pattern, ie if there is one edition pattern instance
-	 * where this element plays a role as primary representation
-	 * 
-	 * @return
-	 */
-    public boolean isBoundInsideEditionPattern()
+    public boolean labelIsBoundToOntologicConcept()
     {
     	return (getPatternRole() != null);
     }
     
-    protected String getLabelValue()
+    protected String getOntologicConceptLabelValue()
     {
     	if (getPatternRole() != null)
-    		return (String)getPatternRole().getLabel().getBindingValue(getEditionPatternInstance());
+    		return (String)getPatternRole().getLabel().getBindingValue(this);
      	return null;
     }
     
-    protected void setLabelValue(String aValue)
+    protected void setOntologicConceptLabelValue(String aValue)
     {
-    	if (getPatternRole() != null && !getPatternRole().getReadOnlyLabel())
-    		getPatternRole().getLabel().setBindingValue(aValue,getEditionPatternInstance());
+    	if (getPatternRole() != null && getPatternRole().getReadOnlyLabel())
+    		getPatternRole().getLabel().setBindingValue(aValue,this);
      }
     
 	public EditionPattern getEditionPattern() 
@@ -145,24 +140,9 @@ public abstract class ViewElement extends ViewObject implements Bindable {
 	
 	public EditionPatternReference getEditionPatternReference() 
 	{
-		// Default behaviour is to have only one EditionPattern where 
-		// this graphical element plays a representation primitive role 
-		// When many, big pbs may happen !!!!
-		
-		if (getEditionPatternReferences().size() > 0) {
-			EditionPatternReference returned = null;
-			for (EditionPatternReference r : getEditionPatternReferences()) {
-				if (r.getPatternRole() instanceof GraphicalElementPatternRole) {
-					if (((GraphicalElementPatternRole)r.getPatternRole()).getIsPrimaryRepresentationRole()) {
-						if (returned != null) {
-							logger.warning("More than one edition pattern reference where element plays a primary role !!!!");
-						}
-						returned = r;
-					}
-				}
-			}
-			if (returned != null) return returned;
-		}
+		// Default behaviour is to have only one EditionPattern
+		if (getEditionPatternReferences().size() > 0)
+			return getEditionPatternReferences().firstElement();
 		return null;
 	}
 
@@ -195,4 +175,10 @@ public abstract class ViewElement extends ViewObject implements Bindable {
 		return null;
 	}
 	
+	@Override
+	public Object getValue(BindingVariable variable) 
+	{
+		logger.info("Tiens, que dois je repondre alors qu'on me demande pour "+variable);
+		return null;
+	}
 }

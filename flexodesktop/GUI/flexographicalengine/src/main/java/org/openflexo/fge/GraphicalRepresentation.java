@@ -96,7 +96,6 @@ implements XMLSerializable, Bindable, BindingEvaluationContext, Cloneable, FGECo
 		hasText,
 		text,
 		isMultilineAllowed,
-		continuousTextEditing,
 		textStyle,
 		relativeTextX,
 		relativeTextY,
@@ -123,7 +122,6 @@ implements XMLSerializable, Bindable, BindingEvaluationContext, Cloneable, FGECo
 	private TextStyle textStyle = TextStyle.makeDefault();
 	private String text;
 	private boolean multilineAllowed = false;
-	private boolean continuousTextEditing = true;
 	private double relativeTextX = 0.5;
 	private double relativeTextY = 0.5;
 	private double absoluteTextX = 0;
@@ -1040,18 +1038,6 @@ implements XMLSerializable, Bindable, BindingEvaluationContext, Cloneable, FGECo
 		FGENotification notification = requireChange(Parameters.isMultilineAllowed, multilineAllowed);
 		if (notification != null) {
 			this.multilineAllowed = multilineAllowed;
-			hasChanged(notification);
-		}
-	}
-
-	public boolean getContinuousTextEditing() {
-		return continuousTextEditing;
-	}
-
-	public void setContinuousTextEditing(boolean continuousTextEditing) {
-		FGENotification notification = requireChange(Parameters.continuousTextEditing, continuousTextEditing);
-		if (notification != null) {
-			this.continuousTextEditing = continuousTextEditing;
 			hasChanged(notification);
 		}
 	}

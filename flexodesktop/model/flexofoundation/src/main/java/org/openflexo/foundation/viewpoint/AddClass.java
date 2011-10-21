@@ -25,7 +25,7 @@ import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.foundation.Inspectors;
 import org.openflexo.foundation.ontology.OntologyClass;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
 
 
 public class AddClass extends AddConcept<ClassPatternRole> {
@@ -71,7 +71,7 @@ public class AddClass extends AddConcept<ClassPatternRole> {
 		}
 	}*/
 
-	private ViewPointDataBinding className;
+	private InspectorDataBinding className;
 	
 	private BindingDefinition CLASS_NAME = new BindingDefinition("className", String.class, BindingDefinitionType.GET, false);
 	
@@ -80,13 +80,13 @@ public class AddClass extends AddConcept<ClassPatternRole> {
 		return CLASS_NAME;
 	}
 
-	public ViewPointDataBinding getClassName() 
+	public InspectorDataBinding getClassName() 
 	{
-		if (className == null) className = new ViewPointDataBinding(this,EditionActionBindingAttribute.className,getClassNameBindingDefinition());
+		if (className == null) className = new InspectorDataBinding(this,EditionActionBindingAttribute.className,getClassNameBindingDefinition());
 		return className;
 	}
 
-	public void setClassName(ViewPointDataBinding className) 
+	public void setClassName(InspectorDataBinding className) 
 	{
 		className.setOwner(this);
 		className.setBindingAttribute(EditionActionBindingAttribute.className);

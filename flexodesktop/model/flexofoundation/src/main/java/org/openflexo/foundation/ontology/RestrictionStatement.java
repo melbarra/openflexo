@@ -53,8 +53,4 @@ public abstract class RestrictionStatement extends OntologyStatement {
 		Exact;
 	}
 
-	public abstract RestrictionType getRestrictionType();
-	
-	public abstract int getCardinality();
-	
 }

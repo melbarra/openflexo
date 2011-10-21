@@ -33,14 +33,14 @@ public class ExactDataRestrictionStatement extends DataRestrictionStatement {
 
 	private static final Logger logger = Logger.getLogger(ExactDataRestrictionStatement.class.getPackage().getName());
 
-	private OntologyDataProperty property;
+	private OntologyProperty property;
 	private int cardinality = 0;
-	private OntologicDataType dataRange;
+	private DataType dataRange = DataType.Unknown;
 	
 	public ExactDataRestrictionStatement(OntologyObject subject, Statement s, Restriction r)
 	{
 		super(subject,s,r);
-		property = (OntologyDataProperty)getOntologyLibrary().getProperty(r.getOnProperty().getURI());
+		property = getOntologyLibrary().getProperty(r.getOnProperty().getURI());
 		
 		String OWL = getFlexoOntology().getOntModel().getNsPrefixURI("owl");
 		Property ON_DATA_RANGE = ResourceFactory.createProperty( OWL + "onDataRange" );
@@ -53,7 +53,7 @@ public class ExactDataRestrictionStatement extends DataRestrictionStatement {
 		RDFNode cardinalityStmtValue = cardinalityStmt.getObject();
 		
 		if (onDataRangeStmtValue instanceof Resource) {
-			dataRange = OntologicDataType.fromURI(((Resource)onDataRangeStmtValue).getURI());
+			dataRange = getDataType(((Resource)onDataRangeStmtValue).getURI());
 		}
 	
 		if (cardinalityStmtValue.isLiteral() && cardinalityStmtValue.canAs(Literal.class)) {
@@ -67,7 +67,7 @@ public class ExactDataRestrictionStatement extends DataRestrictionStatement {
 	}
 
 	@Override
-	public OntologicDataType getDataRange()
+	public DataType getDataRange()
 	{
 		return dataRange;
 	}
@@ -87,7 +87,7 @@ public class ExactDataRestrictionStatement extends DataRestrictionStatement {
 
 
 	@Override
-	public OntologyDataProperty getProperty() 
+	public OntologyProperty getProperty() 
 	{
 		return property;
 	}
@@ -103,13 +103,5 @@ public class ExactDataRestrictionStatement extends DataRestrictionStatement {
 		return property.getName()+" exact "+cardinality;
 	}
 
-	@Override
-	public int getCardinality() {
-		return cardinality;
-	}
 
-	@Override
-	public RestrictionType getRestrictionType() {
-		return RestrictionType.Exact;
-	}
 }

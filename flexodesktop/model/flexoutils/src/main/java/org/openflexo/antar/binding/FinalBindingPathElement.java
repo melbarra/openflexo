@@ -25,6 +25,6 @@ package org.openflexo.antar.binding;
  * @author sylvain
  *
  */
-public interface FinalBindingPathElement<T> extends SimplePathElement<T> {
+public interface FinalBindingPathElement<E,T> extends SimplePathElement<E,T> {
 
 }

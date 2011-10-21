@@ -1,5 +1,5 @@
 package org.openflexo.antar.binding;
 
-public interface SimplePathElement<T> extends BindingPathElement<T> {
+public interface SimplePathElement<E,T> extends BindingPathElement<E,T> {
 
 }

@@ -1,7 +1,6 @@
-package org.openflexo.foundation.viewpoint.binding;
+package org.openflexo.foundation.viewpoint.inspector;
 
 import java.lang.reflect.Type;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -13,7 +12,7 @@ import org.openflexo.foundation.viewpoint.EditionScheme;
 import org.openflexo.foundation.viewpoint.EditionSchemeParameter;
 import org.openflexo.localization.FlexoLocalization;
 
-public class EditionSchemeParameterListPathElement implements SimplePathElement<Hashtable<?,?>>,BindingVariable<Hashtable<?,?>>
+public class EditionSchemeParameterListPathElement implements SimplePathElement<EditionScheme,List<?>>,BindingVariable<EditionScheme,List<?>>
 {
 	private static final Logger logger = Logger.getLogger(EditionSchemeParameterListPathElement.class.getPackage().getName());
 
@@ -76,19 +75,17 @@ public class EditionSchemeParameterListPathElement implements SimplePathElement<
 	}
 
 	@Override
-	public Hashtable<?,?> getBindingValue(Object target,
+	public List<?> getBindingValue(EditionScheme target,
 			BindingEvaluationContext context) {
-		if (target instanceof Hashtable) {
-			return (Hashtable)target;
-		}
-		logger.warning("Unexpected "+target);
+		logger.warning("Que dois-je renvoyer pour "+target);
 		return null;
 	}
 
 	@Override
-	public void setBindingValue(Hashtable<?,?> value, Object target,
+	public void setBindingValue(List<?> value, EditionScheme target,
 			BindingEvaluationContext context) {
-		// Not relevant because not settable
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

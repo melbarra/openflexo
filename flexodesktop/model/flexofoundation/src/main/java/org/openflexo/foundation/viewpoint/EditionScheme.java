@@ -23,10 +23,10 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.antar.binding.BindingModel;
-import org.openflexo.foundation.viewpoint.binding.EditionSchemeParameterListPathElement;
-import org.openflexo.foundation.viewpoint.binding.EditionSchemeParameterPathElement;
-import org.openflexo.foundation.viewpoint.binding.GraphicalElementPathElement;
-import org.openflexo.foundation.viewpoint.binding.PatternRolePathElement;
+import org.openflexo.foundation.viewpoint.inspector.EditionSchemeParameterListPathElement;
+import org.openflexo.foundation.viewpoint.inspector.EditionSchemeParameterPathElement;
+import org.openflexo.foundation.viewpoint.inspector.GraphicalElementPathElement;
+import org.openflexo.foundation.viewpoint.inspector.PatternRolePathElement;
 import org.openflexo.logging.FlexoLogger;
 
 
@@ -34,12 +34,6 @@ public abstract class EditionScheme extends ViewPointObject {
 
 	//
 	protected static final Logger logger = FlexoLogger.getLogger(EditionScheme.class.getPackage().getName());
-
-	public static final String TOP_LEVEL = "topLevel";
-	public static final String TARGET = "target";	
-	public static final String FROM_TARGET = "fromTarget";	
-	public static final String TO_TARGET = "toTarget";
-	
 
 	public static enum EditionSchemeType
 	{
@@ -463,7 +457,7 @@ public abstract class EditionScheme extends ViewPointObject {
 		_bindingModel = new BindingModel();
 		_bindingModel.addToBindingVariables(new EditionSchemeParameterListPathElement(this,null));
 		appendContextualBindingVariables(_bindingModel);
-		_bindingModel.addToBindingVariables(new GraphicalElementPathElement.ViewPathElement(TOP_LEVEL,null));
+		_bindingModel.addToBindingVariables(new GraphicalElementPathElement.ViewPathElement("topLevel",null));
 		if (getEditionPattern() != null) {
 			for (PatternRole pr : getEditionPattern().getPatternRoles()) {
 				PatternRolePathElement newPathElement = PatternRolePathElement.makePatternRolePathElement(pr,this);

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingDefinition.BindingDefinitionType;
 import org.openflexo.foundation.view.action.EditionSchemeAction;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
 
 
 
@@ -53,7 +53,7 @@ public class DeclarePatternRole extends EditionAction<PatternRole> {
 		return getObject().getBindingValue(action);
 	}
 
-	private ViewPointDataBinding object;
+	private InspectorDataBinding object;
 	
 	private BindingDefinition OBJECT = new BindingDefinition("object", Object.class, BindingDefinitionType.GET, false);
 	
@@ -62,13 +62,13 @@ public class DeclarePatternRole extends EditionAction<PatternRole> {
 		return OBJECT;
 	}
 
-	public ViewPointDataBinding getObject() 
+	public InspectorDataBinding getObject() 
 	{
-		if (object == null) object = new ViewPointDataBinding(this,EditionActionBindingAttribute.object,getObjectBindingDefinition());
+		if (object == null) object = new InspectorDataBinding(this,EditionActionBindingAttribute.object,getObjectBindingDefinition());
 		return object;
 	}
 
-	public void setObject(ViewPointDataBinding object) 
+	public void setObject(InspectorDataBinding object) 
 	{
 		object.setOwner(this);
 		object.setBindingAttribute(EditionActionBindingAttribute.object);

@@ -17,7 +17,7 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openflexo.foundation.viewpoint.binding;
+package org.openflexo.foundation.viewpoint.inspector;
 
 import java.util.logging.Logger;
 
@@ -26,40 +26,39 @@ import org.openflexo.antar.binding.AbstractBinding.BindingEvaluationContext;
 import org.openflexo.antar.binding.BindingDefinition;
 import org.openflexo.antar.binding.BindingFactory;
 import org.openflexo.foundation.viewpoint.ViewPointObject;
-import org.openflexo.foundation.viewpoint.inspector.InspectorBindingAttribute;
 import org.openflexo.xmlcode.StringConvertable;
 import org.openflexo.xmlcode.StringEncoder.Converter;
 
 
-public class ViewPointDataBinding implements StringConvertable<ViewPointDataBinding>
+public class InspectorDataBinding implements StringConvertable<InspectorDataBinding>
 {
 
-	private static final Logger logger = Logger.getLogger(ViewPointDataBinding.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(InspectorDataBinding.class.getPackage().getName());
 
-	public static ViewPointDataBinding.DataBindingConverter CONVERTER = new DataBindingConverter();
+	public static InspectorDataBinding.DataBindingConverter CONVERTER = new DataBindingConverter();
 
-	public static class DataBindingConverter extends Converter<ViewPointDataBinding>
+	public static class DataBindingConverter extends Converter<InspectorDataBinding>
 	{
 		public DataBindingConverter() 
 		{
-			super(ViewPointDataBinding.class);
+			super(InspectorDataBinding.class);
 		}
 
 		@Override
-		public ViewPointDataBinding convertFromString(String value) 
+		public InspectorDataBinding convertFromString(String value) 
 		{
-			return new ViewPointDataBinding(value);
+			return new InspectorDataBinding(value);
 		}
 
 		@Override
-		public String convertToString(ViewPointDataBinding value) 
+		public String convertToString(InspectorDataBinding value) 
 		{
 			return value.toString();
 		};
 	}
 
 	@Override
-	public Converter<? extends ViewPointDataBinding> getConverter() {
+	public Converter<? extends InspectorDataBinding> getConverter() {
 		return CONVERTER;
 	}
 
@@ -69,14 +68,14 @@ public class ViewPointDataBinding implements StringConvertable<ViewPointDataBind
 	private BindingDefinition bindingDefinition;
 	private AbstractBinding binding;
 
-	public ViewPointDataBinding(ViewPointObject owner, InspectorBindingAttribute attribute, BindingDefinition df) 
+	public InspectorDataBinding(ViewPointObject owner, InspectorBindingAttribute attribute, BindingDefinition df) 
 	{
 		setOwner(owner);
 		setBindingAttribute(attribute);
 		setBindingDefinition(df);
 	}
 
-	public ViewPointDataBinding(String unparsed) 
+	public InspectorDataBinding(String unparsed) 
 	{
 		unparsedBinding = unparsed;
 	}
@@ -90,9 +89,7 @@ public class ViewPointDataBinding implements StringConvertable<ViewPointDataBind
 
 	public void setBindingValue(Object value, BindingEvaluationContext context)
 	{
- 		if (getBinding() != null && getBinding().isSettable()) {
-			getBinding().setBindingValue(value,context);
-		}
+		if (getBinding() != null && getBinding().isSettable()) getBinding().setBindingValue(value,context);
 	}
 
 	@Override
@@ -312,7 +309,7 @@ public class ViewPointDataBinding implements StringConvertable<ViewPointDataBind
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof ViewPointDataBinding) {
+		if (obj instanceof InspectorDataBinding) {
 			if (toString() == null) return false;
  			return toString().equals(obj.toString());
 		}

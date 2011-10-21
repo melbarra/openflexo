@@ -28,18 +28,18 @@ public class SomeDataRestrictionStatement extends DataRestrictionStatement {
 
 	private static final Logger logger = Logger.getLogger(SomeDataRestrictionStatement.class.getPackage().getName());
 
-	private OntologyDataProperty property;
-	private OntologicDataType dataRange;
+	private OntologyProperty property;
+	private DataType dataRange = DataType.Unknown;
 	
 	public SomeDataRestrictionStatement(OntologyObject subject, Statement s, SomeValuesFromRestriction r)
 	{
 		super(subject,s,r);
-		property = (OntologyDataProperty)getOntologyLibrary().getProperty(r.getOnProperty().getURI());
-		dataRange = OntologicDataType.fromURI(r.getSomeValuesFrom().getURI());
+		property = getOntologyLibrary().getProperty(r.getOnProperty().getURI());
+		dataRange = getDataType(r.getSomeValuesFrom().getURI());
 	}
 
 	@Override
-	public OntologicDataType getDataRange()
+	public DataType getDataRange()
 	{
 		return dataRange;
 	}
@@ -58,7 +58,7 @@ public class SomeDataRestrictionStatement extends DataRestrictionStatement {
 
 
 	@Override
-	public OntologyDataProperty getProperty() 
+	public OntologyProperty getProperty() 
 	{
 		return property;
 	}
@@ -73,16 +73,4 @@ public class SomeDataRestrictionStatement extends DataRestrictionStatement {
 	public String getName() {
 		return property.getName()+" some";
 	}
-	
-	@Override
-	public int getCardinality() {
-		return -1;
-	}
-
-	@Override
-	public RestrictionType getRestrictionType() {
-		return RestrictionType.Some;
-	}
-
-
 }

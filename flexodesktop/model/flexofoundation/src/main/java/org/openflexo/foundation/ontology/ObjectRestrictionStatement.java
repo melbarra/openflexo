@@ -33,9 +33,6 @@ public abstract class ObjectRestrictionStatement extends RestrictionStatement {
 		super(subject,s,r);
 	}
 	
-	public abstract OntologyClass getObject();
-
-	@Override
-	public abstract OntologyObjectProperty getProperty(); 
+	public abstract OntologyObject getObject();
 
 }

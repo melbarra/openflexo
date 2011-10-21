@@ -30,7 +30,6 @@ import org.openflexo.foundation.viewpoint.PatternRole;
 import org.openflexo.foundation.viewpoint.ViewPoint;
 import org.openflexo.foundation.viewpoint.ViewPointLibrary;
 import org.openflexo.foundation.viewpoint.ViewPointObject;
-import org.openflexo.foundation.viewpoint.binding.PatternRolePathElement;
 import org.openflexo.foundation.viewpoint.dm.InspectorEntryInserted;
 import org.openflexo.foundation.viewpoint.dm.InspectorEntryRemoved;
 import org.openflexo.logging.FlexoLogger;
@@ -165,13 +164,6 @@ public class EditionPatternInspector extends ViewPointObject implements Bindable
 		newEntry.setLabel("checkbox");
 		addToEntries(newEntry);
 		return newEntry;
-	}
-	
-	public InspectorEntry deleteEntry(InspectorEntry entry)
-	{
-		removeFromEntries(entry);
-		entry.delete();
-		return entry;
 	}
 	
 	@Override

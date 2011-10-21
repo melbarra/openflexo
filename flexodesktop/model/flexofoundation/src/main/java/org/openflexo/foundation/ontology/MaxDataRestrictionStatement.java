@@ -33,14 +33,14 @@ public class MaxDataRestrictionStatement extends DataRestrictionStatement {
 
 	private static final Logger logger = Logger.getLogger(MaxDataRestrictionStatement.class.getPackage().getName());
 
-	private OntologyDataProperty property;
+	private OntologyProperty property;
 	private int maxCardinality = 0;
-	private OntologicDataType dataRange;
+	private DataType dataRange = DataType.Unknown;
 	
 	public MaxDataRestrictionStatement(OntologyObject subject, Statement s, Restriction r)
 	{
 		super(subject,s,r);
-		property = (OntologyDataProperty)getOntologyLibrary().getProperty(r.getOnProperty().getURI());
+		property = getOntologyLibrary().getProperty(r.getOnProperty().getURI());
 		
 		String OWL = getFlexoOntology().getOntModel().getNsPrefixURI("owl");
 		Property ON_DATA_RANGE = ResourceFactory.createProperty( OWL + "onDataRange" );
@@ -53,7 +53,7 @@ public class MaxDataRestrictionStatement extends DataRestrictionStatement {
 		RDFNode maxCardinalityStmtValue = cardinalityStmt.getObject();
 		
 		if (onDataRangeStmtValue instanceof Resource) {
-			dataRange = OntologicDataType.fromURI(((Resource)onDataRangeStmtValue).getURI());
+			dataRange = getDataType(((Resource)onDataRangeStmtValue).getURI());
 		}
 			
 		if (maxCardinalityStmtValue.isLiteral() && maxCardinalityStmtValue.canAs(Literal.class)) {
@@ -67,7 +67,7 @@ public class MaxDataRestrictionStatement extends DataRestrictionStatement {
 	}
 
 	@Override
-	public OntologicDataType getDataRange()
+	public DataType getDataRange()
 	{
 		return dataRange;
 	}
@@ -86,7 +86,7 @@ public class MaxDataRestrictionStatement extends DataRestrictionStatement {
 
 
 	@Override
-	public OntologyDataProperty getProperty() 
+	public OntologyProperty getProperty() 
 	{
 		return property;
 	}
@@ -103,14 +103,5 @@ public class MaxDataRestrictionStatement extends DataRestrictionStatement {
 		return property.getName()+" max "+maxCardinality;
 	}
 
-	@Override
-	public int getCardinality() {
-		return maxCardinality;
-	}
-
-	@Override
-	public RestrictionType getRestrictionType() {
-		return RestrictionType.Max;
-	}
 
 }

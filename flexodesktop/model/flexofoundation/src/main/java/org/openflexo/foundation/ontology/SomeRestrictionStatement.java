@@ -28,14 +28,14 @@ public class SomeRestrictionStatement extends ObjectRestrictionStatement {
 
 	private static final Logger logger = Logger.getLogger(SomeRestrictionStatement.class.getPackage().getName());
 
-	private OntologyObjectProperty property;
-	private OntologyClass object;
+	private OntologyProperty property;
+	private OntologyObject object;
 	
 	public SomeRestrictionStatement(OntologyObject subject, Statement s, SomeValuesFromRestriction r)
 	{
 		super(subject,s,r);
-		property = (OntologyObjectProperty)getOntologyLibrary().getProperty(r.getOnProperty().getURI());
-		object = (OntologyClass)getOntologyLibrary().getOntologyObject(r.getSomeValuesFrom().getURI());
+		property = getOntologyLibrary().getProperty(r.getOnProperty().getURI());
+		object = getOntologyLibrary().getOntologyObject(r.getSomeValuesFrom().getURI());
 	}
 
 	@Override
@@ -52,13 +52,13 @@ public class SomeRestrictionStatement extends ObjectRestrictionStatement {
 
 
 	@Override
-	public OntologyClass getObject() 
+	public OntologyObject getObject() 
 	{
 		return object;
 	}
 
 	@Override
-	public OntologyObjectProperty getProperty() 
+	public OntologyProperty getProperty() 
 	{
 		return property;
 	}
@@ -73,15 +73,4 @@ public class SomeRestrictionStatement extends ObjectRestrictionStatement {
 	public String getName() {
 		return property.getName()+" some";
 	}
-
-	@Override
-	public int getCardinality() {
-		return -1;
-	}
-
-	@Override
-	public RestrictionType getRestrictionType() {
-		return RestrictionType.Some;
-	}
-
 }

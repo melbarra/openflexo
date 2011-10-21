@@ -21,8 +21,8 @@ package org.openflexo.foundation.viewpoint;
 
 import org.openflexo.antar.binding.BindingModel;
 import org.openflexo.foundation.Inspectors;
-import org.openflexo.foundation.viewpoint.binding.EditionPatternPathElement;
-import org.openflexo.foundation.viewpoint.binding.ViewPointDataBinding;
+import org.openflexo.foundation.viewpoint.inspector.EditionPatternPathElement;
+import org.openflexo.foundation.viewpoint.inspector.InspectorDataBinding;
 import org.openflexo.toolbox.StringUtils;
 
 
@@ -107,13 +107,13 @@ public class LinkScheme extends EditionScheme {
 	{
 		bindingModelNeedToBeRecomputed = false;
 		if (getFromTargetEditionPattern() != null) {
-			bindingModel.addToBindingVariables(new EditionPatternPathElement<LinkScheme>(EditionScheme.FROM_TARGET,getFromTargetEditionPattern(),this));
+			bindingModel.addToBindingVariables(new EditionPatternPathElement<LinkScheme>("fromTarget",getFromTargetEditionPattern(),this));
 		}
 		else if (_getFromTarget() != null && !StringUtils.isEmpty(_getFromTarget())) {
 			bindingModelNeedToBeRecomputed = true;
 		}
 		if (getToTargetEditionPattern() != null) {
-			bindingModel.addToBindingVariables(new EditionPatternPathElement<LinkScheme>(EditionScheme.TO_TARGET,getToTargetEditionPattern(),this));
+			bindingModel.addToBindingVariables(new EditionPatternPathElement<LinkScheme>("toTarget",getToTargetEditionPattern(),this));
 		}
 		else if (_getToTarget() != null && !StringUtils.isEmpty(_getToTarget())) {
 			bindingModelNeedToBeRecomputed = true;
@@ -137,12 +137,12 @@ public class LinkScheme extends EditionScheme {
 		EditionPattern fromEditionPattern = this.getFromTargetEditionPattern();
 		if (fromEditionPattern != null) {
 			ShapePatternRole fromShapePatternRole = fromEditionPattern.getDefaultShapePatternRole();
-			if (fromShapePatternRole != null) newAction.setFromShape(new ViewPointDataBinding("fromTarget."+fromShapePatternRole.getName()));
+			if (fromShapePatternRole != null) newAction.setFromShape(new InspectorDataBinding("fromTarget."+fromShapePatternRole.getName()));
 		}
 		EditionPattern toEditionPattern = this.getToTargetEditionPattern();
 		if (toEditionPattern != null) {
 			ShapePatternRole toShapePatternRole = toEditionPattern.getDefaultShapePatternRole();
-			if (toShapePatternRole != null) newAction.setToShape(new ViewPointDataBinding("toTarget."+toShapePatternRole.getName()));
+			if (toShapePatternRole != null) newAction.setToShape(new InspectorDataBinding("toTarget."+toShapePatternRole.getName()));
 		}
 		return newAction;
 	}

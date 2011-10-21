@@ -54,7 +54,6 @@ public class PrimitivePatternRole extends PatternRole {
 			}
 	}
 	
-	@Override
 	public Class<?> getAccessedClass()
 	{
 		if (primitiveType == null) {
@@ -76,17 +75,4 @@ public class PrimitivePatternRole extends PatternRole {
 		}
 	}
 	
-	@Override
-	public boolean getIsPrimaryRole()
-	{
-		return false;
-	}
-	
-	@Override
-	public void setIsPrimaryRole(boolean isPrimary)
-	{
-		// Not relevant
-	}
-
-
 }
